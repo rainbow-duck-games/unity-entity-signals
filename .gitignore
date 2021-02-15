@@ -48,6 +48,12 @@ ExportedObj/
 *.opendb
 *.VC.db
 
+# IDEA generated
+.idea/
+Assets/Plugins/Editor/JetBrains/
+Assets/Plugins/Editor/JetBrains.meta
+Assets/UnityVS/
+
 # Unity3D generated meta files
 *.pidb.meta
 *.pdb.meta
