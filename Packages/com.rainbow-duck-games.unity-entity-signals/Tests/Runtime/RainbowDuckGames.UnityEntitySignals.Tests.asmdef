@@ -1,7 +1,7 @@
 {
-    "name": "__MyOrganization__.__MyPackage__.Tests",
+    "name": "RainbowDuckGames.UnityEntitySignals.Tests",
     "references": [
-        "__MyOrganization__.__MyPackage__"
+        "RainbowDuckGames.UnityEntitySignals"
     ],
     "optionalUnityReferences": [
         "TestAssemblies"

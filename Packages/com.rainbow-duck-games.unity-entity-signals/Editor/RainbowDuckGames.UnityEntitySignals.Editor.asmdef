@@ -1,7 +1,7 @@
 {
-    "name": "__MyOrganization__.__MyPackage__.Editor",
+    "name": "RainbowDuckGames.UnityEntitySignals.Editor",
     "references": [
-      "__MyOrganization__.__MyPackage__"
+      "RainbowDuckGames.UnityEntitySignals"
     ],
     "includePlatforms": [
         "Editor"

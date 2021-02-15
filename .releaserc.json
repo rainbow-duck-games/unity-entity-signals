@@ -12,22 +12,22 @@
       "@semantic-release/changelog",
       {
         "preset": "angular",
-        "changelogFile": "Packages/com.__my-organization__.__my-package__/CHANGELOG.md"
+        "changelogFile": "Packages/com.rainbow-duck-games.unity-entity-signals/CHANGELOG.md"
       }
     ],
     [
       "@semantic-release/npm",
       {
         "npmPublish": false,
-        "pkgRoot": "Packages/com.__my-organization__.__my-package__"
+        "pkgRoot": "Packages/com.rainbow-duck-games.unity-entity-signals"
       }
     ],
     [
       "@semantic-release/git",
       {
         "assets": [
-          "Packages/com.__my-organization__.__my-package__/package.json",
-          "Packages/com.__my-organization__.__my-package__/CHANGELOG.md"
+          "Packages/com.rainbow-duck-games.unity-entity-signals/package.json",
+          "Packages/com.rainbow-duck-games.unity-entity-signals/CHANGELOG.md"
         ],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
