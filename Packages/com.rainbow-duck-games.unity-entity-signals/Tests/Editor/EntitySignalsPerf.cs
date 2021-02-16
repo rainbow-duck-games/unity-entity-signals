@@ -6,7 +6,7 @@ using Debug = UnityEngine.Debug;
 
 #pragma warning disable 618
 
-namespace EntitySignals.Tests {
+namespace EntitySignals.Tests.Editor {
     public class EntitySignalsPerf {
         [Test]
         public void ProcessSubscribeSendUnsubscribe() {
