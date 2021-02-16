@@ -49,7 +49,7 @@ namespace EntitySignals {
                 SignalType = attr.SignalType ?? candidate.GetParameters()[1].ParameterType
             };
         }
-        
+
         public class HandlerMeta {
             public readonly int ParamCount;
             public readonly MethodInfo MethodInfo;

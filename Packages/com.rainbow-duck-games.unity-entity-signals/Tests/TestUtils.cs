@@ -3,15 +3,15 @@ using NUnit.Framework;
 
 namespace EntitySignals.Tests {
     public class Recorder {
-        private Dictionary<string, object[]> records = new Dictionary<string, object[]>();
+        private readonly Dictionary<string, object[]> _records = new Dictionary<string, object[]>();
 
         public void Record(string key, params object[] args) {
-            records[key] = args;
+            _records[key] = args;
         }
 
         public void Verify(string key, params object[] args) {
-            Assert.IsTrue(records.ContainsKey(key));
-            Assert.AreEqual(records[key], args);
+            Assert.IsTrue(_records.ContainsKey(key));
+            Assert.AreEqual(_records[key], args);
         }
     }
 }

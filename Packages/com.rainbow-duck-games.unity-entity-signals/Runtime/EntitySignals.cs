@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using EntitySignals.Context;
-using JetBrains.Annotations;
 
 #pragma warning disable 618
 
@@ -20,7 +19,7 @@ namespace EntitySignals {
             Default.Dispose();
         }
     }
-    
+
     public class EntitySignals {
         // TODo Matcher
         private static HandlersCache _cache;

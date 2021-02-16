@@ -6,7 +6,7 @@ namespace EntitySignals.Context {
         private readonly EntitySignals _entitySignals;
         private readonly TEntity _entity;
 
-        public EntityContext( HandlersCache cache, EntitySignals entitySignals, TEntity entity) {
+        public EntityContext(HandlersCache cache, EntitySignals entitySignals, TEntity entity) {
             _cache = cache;
             _entitySignals = entitySignals;
             _entity = entity;
@@ -27,10 +27,8 @@ namespace EntitySignals.Context {
 
             // Process meta
             var count = 0;
-            foreach (var candidate in meta)
-            {
-                if (candidate.ParamCount == 1)
-                {
+            foreach (var candidate in meta) {
+                if (candidate.ParamCount == 1) {
                     if (candidate.RequiredType != null && !candidate.RequiredType.IsAssignableFrom(entityType))
                         continue;
 
@@ -38,9 +36,7 @@ namespace EntitySignals.Context {
                     var @delegate = Delegate.CreateDelegate(delegateType, receiver, candidate.MethodInfo);
                     action.Invoke(@delegate);
                     count++;
-                }
-                else if (candidate.ParamCount == 2)
-                {
+                } else if (candidate.ParamCount == 2) {
                     if (!candidate.RequiredType.IsAssignableFrom(entityType))
                         continue;
 
@@ -48,9 +44,7 @@ namespace EntitySignals.Context {
                     var @delegate = Delegate.CreateDelegate(delegateType, receiver, candidate.MethodInfo);
                     action.Invoke(@delegate);
                     count++;
-                }
-                else
-                {
+                } else {
                     throw new Exception("ToDo"); // TODo
                 }
             }
