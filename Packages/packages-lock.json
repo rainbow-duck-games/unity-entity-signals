@@ -1,7 +1,13 @@
 {
   "dependencies": {
+    "com.homebrew.signals": {
+      "version": "file:com.homebrew.signals",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.rainbow-duck-games.unity-entity-signals": {
-      "version": "file:com._my-organization__.unity-entity-signals",
+      "version": "file:com.rainbow-duck-games.unity-entity-signals",
       "depth": 0,
       "source": "embedded",
       "dependencies": {}
@@ -11,6 +17,15 @@
       "depth": 1,
       "source": "registry",
       "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.ide.rider": {
+      "version": "2.0.7",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.test-framework": "1.1.1"
+      },
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.vscode": {

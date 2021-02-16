@@ -1,6 +1,6 @@
 {
-    "name": "RainbowDuckGames.UnityEntitySignals",
-    "rootNamespace": "EntitySignals",
+    "name": "Homebrew.Signals",
+    "rootNamespace": "Homebrew",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

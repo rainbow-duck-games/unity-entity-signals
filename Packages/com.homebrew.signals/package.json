@@ -1,7 +1,7 @@
 {
-  "name": "com.rainbow-duck-games.unity-entity-signals",
-  "displayName": "Entity Signals",
-  "version": "0.1.0",
+  "name": "com.homebrew.signals",
+  "displayName": "Pixeye Signals",
+  "version": "1.0.0",
   "unity": "2020.1",
   "description": "",
   "publishConfig": {

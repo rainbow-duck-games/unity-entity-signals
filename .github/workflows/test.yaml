@@ -47,13 +47,18 @@ jobs:
         with:
           projectPath: ${{ matrix.projectPath }}
           unityVersion: ${{ matrix.unityVersion }}
-          artifactsPath: TestResults
-          customParameters: -burst-disable-compilation -enableCodeCoverage -coverageOptions generateAdditionalMetrics;enableCyclomaticComplexity;assemblyFilters:${{ steps.assemblyFilters.outputs.result }}
+          testMode: playmode
+          customParameters: -nographics -burst-disable-compilation -enableCodeCoverage -coverageOptions generateAdditionalMetrics;enableCyclomaticComplexity;assemblyFilters:${{ steps.assemblyFilters.outputs.result }}
       - name: Upload Test Results Artifacts
         uses: actions/upload-artifact@v1
         with:
           name: Test results
           path: ${{ steps.tests.outputs.artifactsPath }}
+      - name: Publish test results
+        uses: rainbow-duck-games/unity-test-publisher@v0.2.3
+        if: ${{ always() }} # Avoid skipping on failed tests
+        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload Code Coverage Artifacts
         uses: actions/upload-artifact@v1
         with:
