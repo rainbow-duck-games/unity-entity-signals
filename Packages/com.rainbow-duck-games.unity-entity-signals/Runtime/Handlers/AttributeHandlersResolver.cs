@@ -1,20 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.CompilerServices;
+using JetBrains.Annotations;
 
-namespace EntitySignals {
-    public class HandlersCache {
-        private readonly ConditionalWeakTable<Type, List<HandlerMeta>> _cache =
-            new ConditionalWeakTable<Type, List<HandlerMeta>>();
-
-        public IEnumerable<HandlerMeta> GetValue(Type type) {
-            return _cache.GetValue(type, PrepareReceiverMeta);
-        }
-
-        private static List<HandlerMeta> PrepareReceiverMeta(Type receiverType) {
+namespace EntitySignals.Handlers {
+    public class AttributeHandlersResolver : IHandlersResolver {
+        public IEnumerable<HandlerMeta> GetHandlers(Type type) {
             var list = new List<HandlerMeta>();
-            var all = receiverType.GetMethods();
+            var all = type.GetMethods();
             foreach (var candidate in all) {
                 var attr = candidate.GetCustomAttribute<SignalHandlerAttribute>();
                 if (attr == null)
@@ -29,7 +22,7 @@ namespace EntitySignals {
                         break;
                     default:
                         throw new Exception(
-                            $"Can't bind method {receiverType.Name}: Method {candidate.Name} has wrong amount of arguments");
+                            $"Can't bind method {type.Name}: Method {candidate.Name} has wrong amount of arguments");
                 }
             }
 
@@ -49,17 +42,18 @@ namespace EntitySignals {
                 SignalType = attr.SignalType ?? candidate.GetParameters()[1].ParameterType
             };
         }
+    }
 
-        public class HandlerMeta {
-            public readonly int ParamCount;
-            public readonly MethodInfo MethodInfo;
-            public Type RequiredType;
-            public Type SignalType;
+    [MeansImplicitUse]
+    [AttributeUsage(AttributeTargets.Method)]
+    // ToDo Analyzer to enforce compile-time errors
+    public class SignalHandlerAttribute : Attribute {
+        public readonly Type EntityType;
+        public readonly Type SignalType;
 
-            public HandlerMeta(int paramCount, MethodInfo methodInfo) {
-                ParamCount = paramCount;
-                MethodInfo = methodInfo;
-            }
+        public SignalHandlerAttribute(Type entityType = null, Type signalType = null) {
+            EntityType = entityType;
+            SignalType = signalType;
         }
     }
 }

@@ -1,29 +1,31 @@
 ﻿using System;
+using EntitySignals.Handlers;
 
 namespace EntitySignals.Context {
-    internal class EntityContext<TEntity> : IContext<TEntity> {
-        private readonly HandlersCache _cache;
+    public class EntityContext<TEntity> : IContext<TEntity> {
+        private readonly IHandlersResolver _resolver;
         private readonly EntitySignals _entitySignals;
         private readonly TEntity _entity;
 
-        public EntityContext(HandlersCache cache, EntitySignals entitySignals, TEntity entity) {
-            _cache = cache;
+        public EntityContext(IHandlersResolver resolver, EntitySignals entitySignals, TEntity entity = default) {
+            _resolver = resolver;
             _entitySignals = entitySignals;
             _entity = entity;
         }
 
-        public void Add(object receiver) {
+        public virtual void Add(object receiver) {
             EachReceiveInternal(receiver, @delegate => { _entitySignals.GetDelegates(_entity).Add(@delegate); });
         }
 
-        public void Remove(object receiver) {
+        public virtual void Remove(object receiver) {
+            // ToDo Optimize with receiver-based dictionary
             EachReceiveInternal(receiver, @delegate => { _entitySignals.GetDelegates(_entity).Remove(@delegate); });
         }
 
         private void EachReceiveInternal(object receiver, Action<Delegate> action) {
             var receiverType = receiver.GetType();
             var entityType = typeof(TEntity);
-            var meta = _cache.GetValue(receiverType);
+            var meta = _resolver.GetHandlers(receiverType);
 
             // Process meta
             var count = 0;
@@ -54,7 +56,7 @@ namespace EntitySignals.Context {
                     $"Can't bind method {receiver.GetType().Name} to entity {typeof(TEntity)}: No methods matched signature");
         }
 
-        public void Add<TSignal>(ESHandler<TSignal> signalHandler) {
+        public virtual void Add<TSignal>(ESHandler<TSignal> signalHandler) {
             _entitySignals.GetDelegates(_entity).Add(signalHandler);
         }
 
@@ -62,7 +64,7 @@ namespace EntitySignals.Context {
             _entitySignals.GetDelegates(_entity).Add(signalHandler);
         }
 
-        public void Remove<TSignal>(ESHandler<TEntity> signalHandler) {
+        public virtual void Remove<TSignal>(ESHandler<TEntity> signalHandler) {
             _entitySignals.GetDelegates(_entity).Remove(signalHandler);
         }
 
@@ -70,11 +72,11 @@ namespace EntitySignals.Context {
             _entitySignals.GetDelegates(_entity).Remove(signalHandler);
         }
 
-        public void Dispose() {
-            _entitySignals.GetDelegates(_entity).Clear();
+        public virtual void Dispose() {
+            _entitySignals.Dispose(_entity);
         }
 
-        public void Send<TSignal>(TSignal arg) {
+        public virtual void Send<TSignal>(TSignal arg) {
             _entitySignals.Send(_entity, arg);
         }
 

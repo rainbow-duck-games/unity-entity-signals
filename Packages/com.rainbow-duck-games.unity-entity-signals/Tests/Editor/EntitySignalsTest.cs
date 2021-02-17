@@ -1,4 +1,5 @@
 ﻿using System;
+using EntitySignals.Handlers;
 using NUnit.Framework;
 using UnityEngine;
 using Object = UnityEngine.Object;

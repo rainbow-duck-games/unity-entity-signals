@@ -1,8 +1,9 @@
 ﻿using System;
+using EntitySignals.Handlers;
 
 namespace EntitySignals.Context {
     internal class NullContext : EntityContext<object> {
-        public NullContext(HandlersCache cache, EntitySignals entitySignals) : base(cache, entitySignals, null) {
+        public NullContext(IHandlersResolver resolver, EntitySignals entitySignals) : base(resolver, entitySignals) {
         }
 
         public override void Add<TSignal>(ESHandler<object, TSignal> signalHandler) {
