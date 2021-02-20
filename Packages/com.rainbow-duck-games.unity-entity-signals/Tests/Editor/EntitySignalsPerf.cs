@@ -1,153 +1,129 @@
 ﻿using System;
-using System.Diagnostics;
 using EntitySignals.Handlers;
 using Homebrew;
+using JetBrains.Annotations;
 using NUnit.Framework;
-using Debug = UnityEngine.Debug;
+using Unity.PerformanceTesting;
 
 #pragma warning disable 618
 
 namespace EntitySignals.Tests.Editor {
+    [UsedImplicitly]
     public class EntitySignalsPerf {
-        [Test]
-        public void ProcessSubscribeSendUnsubscribe() {
-            var entity = new TestEntity();
-            var sig = new Signals();
-            var oldTime = RunNTimes(i => {
-                var receiver = new SignalsTestReceiver();
-                sig.Add(receiver);
-                sig.Send(i);
-                sig.Remove(receiver);
-                receiver.Verify("First", i);
-                Assert.AreEqual(0, sig.ReceiverCount());
-            });
+        private const int Warmup = 10;
+        private const int Measurements = 100;
+        private const int Iterations = 5;
 
-            Action<int> Prepare(EntitySignals es, Func<Recorder> receiverPrepare) {
-                return i => {
+        [UsedImplicitly]
+        public class SendOnly : AbstractPerfTest {
+            protected override Action PrepareSignals(Signals signals, Func<Recorder> receiverPrepare) {
+                var receiver = receiverPrepare.Invoke();
+                signals.Add(receiver);
+                return () => { signals.Send(1); };
+            }
+
+            protected override Action Prepare(EntitySignals es, Func<Recorder> receiverPrepare) {
+                var receiver = receiverPrepare.Invoke();
+                es.On(Entity).Add(receiver);
+                return () => { es.On(Entity).Send(1); };
+            }
+        }
+
+        [UsedImplicitly]
+        public class SubscribeOnly : AbstractPerfTest {
+            protected override Action PrepareSignals(Signals signals, Func<Recorder> receiverPrepare) {
+                return () => {
                     var receiver = receiverPrepare.Invoke();
-                    es.On(entity).Add(receiver);
-                    es.On(entity).Send(i);
-                    es.On(entity).Remove(receiver);
-                    receiver.Verify("First", entity, i);
-                    Assert.AreEqual(0, es.On(entity).Count);
+                    signals.Add(receiver);
                 };
             }
 
-            var attributesTime = RunNTimes(Prepare(
-                new EntitySignals(new AttributeHandlersResolver()),
-                () => new AttributeTestReceiver()));
-            var attributesCachedTime = RunNTimes(Prepare(
-                new EntitySignals(new CachedHandlersResolver(new AttributeHandlersResolver())),
-                () => new AttributeCacheTestReceiver()));
-            var interfaceTime = RunNTimes(Prepare(
-                new EntitySignals(new InterfaceHandlersResolver()),
-                () => new InterfaceTestReceiver()));
-            var interfaceCachedTime = RunNTimes(Prepare(
-                new EntitySignals(new CachedHandlersResolver(new InterfaceHandlersResolver())),
-                () => new InterfaceCacheTestReceiver()));
-
-            Debug.Log($"FULL FLOW: Results for 100k runs");
-            Debug.Log($"REFERENCE: FULL FLOW - took {oldTime} ms to complete");
-            Debug.Log($"ATTRIBUTE: FULL FLOW - took {attributesTime} ms to complete");
-            Debug.Log($"ATT CACHE: FULL FLOW - took {attributesCachedTime} ms to complete");
-            Debug.Log($"INTERFACE: FULL FLOW - took {interfaceTime} ms to complete");
-            Debug.Log($"INT CACHE: FULL FLOW - took {interfaceCachedTime} ms to complete");
-        }
-
-        [Test]
-        public void ProcessSendOnly() {
-            var entity = new TestEntity();
-
-            var sig = new Signals();
-            var sReceiver = new SignalsTestReceiver();
-            sig.Add(sReceiver);
-            var oldTime = RunNTimes(i => { sig.Send(i); });
-
-            Action<int> Prepare(EntitySignals es, Recorder receiver) {
-                es.On(entity).Add(receiver);
-                return i => { es.On(entity).Send(i); };
-            }
-
-            var attributesTime = RunNTimes(Prepare(
-                new EntitySignals(new AttributeHandlersResolver()),
-                new AttributeTestReceiver()
-            ));
-            var attributesCachedTime = RunNTimes(Prepare(
-                new EntitySignals(new CachedHandlersResolver(new AttributeHandlersResolver())),
-                new AttributeCacheTestReceiver()
-            ));
-            var interfaceTime = RunNTimes(Prepare(
-                new EntitySignals(new InterfaceHandlersResolver()),
-                new InterfaceTestReceiver()
-            ));
-            var interfaceCachedTime = RunNTimes(Prepare(
-                new EntitySignals(new CachedHandlersResolver(new InterfaceHandlersResolver())),
-                new InterfaceCacheTestReceiver()
-            ));
-
-            Debug.Log($"SEND ONLY: Results for 100k runs");
-            Debug.Log($"REFERENCE: SEND ONLY - took {oldTime} ms to complete");
-            Debug.Log($"ATTRIBUTE: SEND ONLY - took {attributesTime} ms to complete");
-            Debug.Log($"ATT CACHE: SEND ONLY - took {attributesCachedTime} ms to complete");
-            Debug.Log($"INTERFACE: SEND ONLY - took {interfaceTime} ms to complete");
-            Debug.Log($"INT CACHE: SEND ONLY - took {interfaceCachedTime} ms to complete");
-        }
-
-        [Test]
-        public void ProcessSubscribeOnly() {
-            var entity = new TestEntity();
-
-            var sig = new Signals();
-            var oldTime = RunNTimes(i => {
-                var receiver = new SignalsTestReceiver();
-                sig.Add(receiver);
-            });
-            sig.Send(99999);
-
-            Action<int> Prepare(EntitySignals es, Func<Recorder> receiverCreate) {
-                return i => {
+            protected override Action Prepare(EntitySignals es, Func<Recorder> receiverCreate) {
+                return () => {
                     var receiver = receiverCreate.Invoke();
-                    es.On(entity).Add(receiver);
+                    es.On(Entity).Add(receiver);
+                };
+            }
+        }
+
+        [UsedImplicitly]
+        public class SubscribeSendUnsubscribe : AbstractPerfTest {
+            protected override Action PrepareSignals(Signals signals, Func<Recorder> receiverPrepare) {
+                return () => {
+                    var receiver = new SignalsTestReceiver();
+                    signals.Add(receiver);
+                    signals.Send(1);
+                    signals.Remove(receiver);
                 };
             }
 
-            var attributesTime = RunNTimes(Prepare(
-                new EntitySignals(new AttributeHandlersResolver()),
-                () => new AttributeTestReceiver()
-            ));
-            var attributesCachedTime = RunNTimes(Prepare(
-                new EntitySignals(new CachedHandlersResolver(new AttributeHandlersResolver())),
-                () => new AttributeCacheTestReceiver()
-            ));
-            var interfaceTime = RunNTimes(Prepare(
-                new EntitySignals(new InterfaceHandlersResolver()),
-                () => new InterfaceTestReceiver()
-            ));
-            var interfaceCachedTime = RunNTimes(Prepare(
-                new EntitySignals(new CachedHandlersResolver(new InterfaceHandlersResolver())),
-                () => new InterfaceCacheTestReceiver()
-            ));
-
-            Debug.Log($"SUBSCRIBE ONLY: Results for 100k runs");
-            Debug.Log($"REFERENCE: SUBSCRIBE ONLY - took {oldTime} ms to complete");
-            Debug.Log($"ATTRIBUTE: SUBSCRIBE ONLY - took {attributesTime} ms to complete");
-            Debug.Log($"ATT CACHE: SUBSCRIBE ONLY - took {attributesCachedTime} ms to complete");
-            Debug.Log($"INTERFACE: SUBSCRIBE ONLY - took {interfaceTime} ms to complete");
-            Debug.Log($"INT CACHE: SUBSCRIBE ONLY - took {interfaceCachedTime} ms to complete");
+            protected override Action Prepare(EntitySignals es, Func<Recorder> receiverPrepare) {
+                return () => {
+                    var receiver = receiverPrepare.Invoke();
+                    es.On(Entity).Add(receiver);
+                    es.On(Entity).Send(1);
+                    es.On(Entity).Remove(receiver);
+                };
+            }
         }
 
-        private static long RunNTimes(Action<int> action, int runs = 100000) {
-            var st = new Stopwatch();
-            st.Start();
-            for (var i = 0; i < runs; i++) {
-                action.Invoke(i);
+        public abstract class AbstractPerfTest {
+            protected readonly TestEntity Entity = new TestEntity();
+
+            protected abstract Action PrepareSignals(Signals signals, Func<Recorder> receiverPrepare);
+            protected abstract Action Prepare(EntitySignals es, Func<Recorder> receiverPrepare);
+
+            private static void RunMeasure(Action action) {
+                Measure.Method(action)
+                    .WarmupCount(Warmup)
+                    .MeasurementCount(Measurements)
+                    .IterationsPerMeasurement(Iterations)
+                    .GC()
+                    .Run();
             }
 
-            st.Stop();
-            return st.ElapsedMilliseconds;
+            [Test, Performance]
+            public void AttributesResolver() {
+                RunMeasure(Prepare(
+                    new EntitySignals(new AttributeHandlersResolver()),
+                    () => new AttributeTestReceiver()
+                ));
+            }
+
+            [Test, Performance]
+            public void AttributesCachedResolver() {
+                RunMeasure(Prepare(
+                    new EntitySignals(new CachedHandlersResolver(new AttributeHandlersResolver())),
+                    () => new AttributeCacheTestReceiver()
+                ));
+            }
+
+            [Test, Performance]
+            public void InterfaceResolver() {
+                RunMeasure(Prepare(
+                    new EntitySignals(new InterfaceHandlersResolver()),
+                    () => new InterfaceTestReceiver()
+                ));
+            }
+
+            [Test, Performance]
+            public void InterfaceCachedResolver() {
+                RunMeasure(Prepare(
+                    new EntitySignals(new CachedHandlersResolver(new InterfaceHandlersResolver())),
+                    () => new InterfaceCacheTestReceiver()
+                ));
+            }
+
+            [Test, Performance]
+            public void PixeyeSignals() {
+                RunMeasure(PrepareSignals(
+                    new Signals(),
+                    () => new SignalsTestReceiver()
+                ));
+            }
         }
 
-        private class TestEntity {
+        public class TestEntity {
         }
 
         private class AttributeTestReceiver : Recorder {
