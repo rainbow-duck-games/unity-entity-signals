@@ -97,8 +97,8 @@ namespace EntitySignals.Tests.Editor {
             var entity = Object.Instantiate(new GameObject());
             var receiver = new TestReceiver();
 
-            es.On(entity).Add((ESHandler<GameObject, int>) receiver.OnGameObjectFirstSignal);
-            es.On(entity).Add((ESHandler<char>) receiver.OnGameObjectSecondSignal);
+            es.On(entity).Add((ESHandler<GameObject, int>) receiver.OnGameObjectSignal);
+            es.On(entity).Add((ESHandler<char>) receiver.OnGameObjectSignal);
             Assert.AreEqual(2, es.On(entity).Count);
 
             es.On(entity).Send(1);
@@ -136,12 +136,12 @@ namespace EntitySignals.Tests.Editor {
 
         private class TestReceiver : Recorder {
             [SignalHandler]
-            public void OnGameObjectFirstSignal(GameObject obj, int x) {
+            public void OnGameObjectSignal(GameObject obj, int x) {
                 Record("First", obj, x);
             }
 
             [SignalHandler]
-            public void OnGameObjectSecondSignal(char c) {
+            public void OnGameObjectSignal(char c) {
                 Record("Second", c);
             }
         }

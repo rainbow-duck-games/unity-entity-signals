@@ -16,6 +16,10 @@ namespace EntitySignals.Utility.Tact {
         public static EfficientInvoker GetMethodInvoker(this Type type, string methodName) {
             return EfficientInvoker.ForMethod(type, methodName);
         }
+        
+        public static EfficientInvoker GetMethodInvoker(this Type type, MethodInfo method) {
+            return EfficientInvoker.ForMethod(type, method);
+        }
 
         public static EfficientInvoker GetPropertyInvoker(this Type type, string propertyName) {
             return EfficientInvoker.ForProperty(type, propertyName);

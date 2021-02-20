@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using EntitySignals.Context;
 using EntitySignals.Handlers;
+using EntitySignals.Utility.Tact;
 
 #pragma warning disable 618
 
@@ -22,13 +23,13 @@ namespace EntitySignals {
     }
 
     public class EntitySignals {
+        private readonly IHandlersResolver _resolver;
+        private readonly List<ReceiverDelegate> _globalDelegates = new List<ReceiverDelegate>();
+
+        private ConditionalWeakTable<object, List<ReceiverDelegate>> _delegates =
+            new ConditionalWeakTable<object, List<ReceiverDelegate>>();
+
         // TODo Matcher
-        private static IHandlersResolver _resolver;
-        private readonly List<Delegate> _globalDelegates = new List<Delegate>();
-
-        private ConditionalWeakTable<object, List<Delegate>> _delegates =
-            new ConditionalWeakTable<object, List<Delegate>>();
-
         private ConditionalWeakTable<Type, DynamicDelegate> _dynamics =
             new ConditionalWeakTable<Type, DynamicDelegate>();
 
@@ -55,14 +56,14 @@ namespace EntitySignals {
 
         public void Dispose() {
             _globalDelegates.Clear();
-            _delegates = new ConditionalWeakTable<object, List<Delegate>>();
+            _delegates = new ConditionalWeakTable<object, List<ReceiverDelegate>>();
         }
 
-        internal List<Delegate> GetDelegates(object instance) {
+        internal List<ReceiverDelegate> GetDelegates(object instance) {
             // ToDo Dynamics
             return instance == null
                 ? _globalDelegates
-                : _delegates.GetValue(instance, k => new List<Delegate>());
+                : _delegates.GetValue(instance, k => new List<ReceiverDelegate>());
         }
 
         internal void Dispose(object instance) {
@@ -74,26 +75,50 @@ namespace EntitySignals {
             // if (Delegates.Count == 0)
             //     throw new Exception(""); // ToDo Strict mode?
 
-            GetDelegates(entity).ForEach(receiver => {
-                (receiver as ESHandler<TSignal>)?
-                    .Invoke(arg);
-                if (entity != null)
-                    (receiver as ESHandler<TEntity, TSignal>)?
-                        .Invoke(entity, arg);
+            GetDelegates(entity).ForEach(rd => {
+                if (!rd.Valid(arg))
+                    return;
+                
+                switch (rd.Args) {
+                    case 1:
+                        rd.Invoker.Invoke(rd.Receiver, arg);
+                        break;
+                    case 2:
+                        rd.Invoker.Invoke(rd.Receiver, entity, arg);
+                        break;
+                }
             });
         }
     }
-    
+
     public delegate void ESHandler<in TSignal>(TSignal signal);
 
     public delegate void ESHandler<in TEntity, in TSignal>(TEntity entity, TSignal signal);
 
+    public class ReceiverDelegate {
+        public readonly Type SignalType;
+        public readonly EfficientInvoker Invoker;
+        public readonly object Receiver;
+        public readonly int Args;
+
+        public ReceiverDelegate(Type signalType, EfficientInvoker invoker, object receiver, int args = 2) {
+            SignalType = signalType;
+            Invoker = invoker;
+            Receiver = receiver;
+            Args = args;
+        }
+
+        public bool Valid(object signal) {
+            return SignalType == signal.GetType();
+        }
+    }
+
     public class DynamicDelegate {
-        public readonly Delegate Delegate;
+        public readonly ReceiverDelegate ReceiverDelegate;
         public readonly Predicate<object> Predicate;
 
-        public DynamicDelegate(Delegate @delegate, Predicate<object> predicate) {
-            Delegate = @delegate;
+        public DynamicDelegate(ReceiverDelegate receiverDelegate, Predicate<object> predicate) {
+            ReceiverDelegate = receiverDelegate;
             Predicate = predicate;
         }
     }

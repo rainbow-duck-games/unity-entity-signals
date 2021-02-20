@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -65,6 +66,20 @@ namespace EntitySignals.Utility.Tact {
             var key = new MethodKey(type, methodName);
             return MethodToWrapperMap.GetOrAdd(key, k => {
                 var method = k.Type.GetTypeInfo().GetMethod(k.Name);
+                var wrapper = CreateMethodWrapper(k.Type, method, false);
+                return new EfficientInvoker(wrapper);
+            });
+        }
+
+        public static EfficientInvoker ForMethod(Type type, MethodInfo method) {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+
+            if (method == null)
+                throw new ArgumentNullException(nameof(method));
+
+            var key = new MethodKey(type, $"{method.Name}:{method.GetHashCode()}");
+            return MethodToWrapperMap.GetOrAdd(key, k => {
                 var wrapper = CreateMethodWrapper(k.Type, method, false);
                 return new EfficientInvoker(wrapper);
             });

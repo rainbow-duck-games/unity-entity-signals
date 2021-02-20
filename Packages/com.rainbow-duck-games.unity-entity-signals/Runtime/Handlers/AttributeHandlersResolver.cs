@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using EntitySignals.Utility.Tact;
 using JetBrains.Annotations;
 
 namespace EntitySignals.Handlers {
@@ -15,10 +16,10 @@ namespace EntitySignals.Handlers {
 
                 switch (candidate.GetParameters().Length) {
                     case 1:
-                        list.Add(SingleArgDelegate(attr, candidate));
+                        list.Add(SingleArgDelegate(attr, type, candidate));
                         break;
                     case 2:
-                        list.Add(TwoArgDelegate(attr, candidate));
+                        list.Add(TwoArgDelegate(attr, type, candidate));
                         break;
                     default:
                         throw new Exception(
@@ -29,15 +30,15 @@ namespace EntitySignals.Handlers {
             return list;
         }
 
-        private static HandlerMeta SingleArgDelegate(SignalHandlerAttribute attr, MethodInfo candidate) {
-            return new HandlerMeta(1, candidate) {
+        private static HandlerMeta SingleArgDelegate(SignalHandlerAttribute attr, Type type, MethodInfo candidate) {
+            return new HandlerMeta(1, type.GetMethodInvoker(candidate)) {
                 RequiredType = attr.EntityType,
                 SignalType = attr.SignalType ?? candidate.GetParameters()[0].ParameterType
             };
         }
 
-        private static HandlerMeta TwoArgDelegate(SignalHandlerAttribute attr, MethodInfo candidate) {
-            return new HandlerMeta(2, candidate) {
+        private static HandlerMeta TwoArgDelegate(SignalHandlerAttribute attr, Type type, MethodInfo candidate) {
+            return new HandlerMeta(2, type.GetMethodInvoker(candidate)) {
                 RequiredType = attr.EntityType ?? candidate.GetParameters()[0].ParameterType,
                 SignalType = attr.SignalType ?? candidate.GetParameters()[1].ParameterType
             };

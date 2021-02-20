@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using EntitySignals.Handlers;
+using EntitySignals.Utility.Tact;
 
 namespace EntitySignals.Context {
     public class EntityContext<TEntity> : IContext<TEntity> {
@@ -14,62 +16,42 @@ namespace EntitySignals.Context {
         }
 
         public virtual void Add(object receiver) {
-            EachReceiveInternal(receiver, @delegate => { _entitySignals.GetDelegates(_entity).Add(@delegate); });
+            var receiverType = receiver.GetType();
+            var entityType = typeof(TEntity);
+            var handlers = _resolver.GetHandlers(receiverType)
+                .Where(meta => meta.RequiredType == null || meta.RequiredType.IsAssignableFrom(entityType))
+                .Select(meta => new ReceiverDelegate(meta.SignalType, meta.MethodInvoker, receiver, meta.ParamCount))
+                .ToArray();
+            if (handlers.Length == 0)
+                throw new Exception(
+                    $"Can't bind method {receiver.GetType().Name} to entity {typeof(TEntity)}: No methods matched signature");
+            
+            _entitySignals.GetDelegates(_entity).AddRange(handlers);
         }
 
         public virtual void Remove(object receiver) {
-            // ToDo Optimize with receiver-based dictionary
-            EachReceiveInternal(receiver, @delegate => { _entitySignals.GetDelegates(_entity).Remove(@delegate); });
-        }
-
-        private void EachReceiveInternal(object receiver, Action<Delegate> action) {
-            var receiverType = receiver.GetType();
-            var entityType = typeof(TEntity);
-            var meta = _resolver.GetHandlers(receiverType);
-
-            // Process meta
-            var count = 0;
-            foreach (var candidate in meta) {
-                if (candidate.ParamCount == 1) {
-                    if (candidate.RequiredType != null && !candidate.RequiredType.IsAssignableFrom(entityType))
-                        continue;
-
-                    var delegateType = typeof(ESHandler<>).MakeGenericType(candidate.SignalType);
-                    var @delegate = Delegate.CreateDelegate(delegateType, receiver, candidate.MethodInfo);
-                    action.Invoke(@delegate);
-                    count++;
-                } else if (candidate.ParamCount == 2) {
-                    if (!candidate.RequiredType.IsAssignableFrom(entityType))
-                        continue;
-
-                    var delegateType = typeof(ESHandler<,>).MakeGenericType(typeof(TEntity), candidate.SignalType);
-                    var @delegate = Delegate.CreateDelegate(delegateType, receiver, candidate.MethodInfo);
-                    action.Invoke(@delegate);
-                    count++;
-                } else {
-                    throw new Exception("ToDo"); // TODo
-                }
-            }
-
-            if (count == 0)
-                throw new Exception(
-                    $"Can't bind method {receiver.GetType().Name} to entity {typeof(TEntity)}: No methods matched signature");
+            _entitySignals.GetDelegates(_entity)
+                .RemoveAll(rd => rd.Receiver == receiver);
         }
 
         public virtual void Add<TSignal>(ESHandler<TSignal> signalHandler) {
-            _entitySignals.GetDelegates(_entity).Add(signalHandler);
+            _entitySignals.GetDelegates(_entity)
+                .Add(new ReceiverDelegate(typeof(TSignal), signalHandler.GetInvoker(), signalHandler, 1));
         }
 
         public virtual void Add<TSignal>(ESHandler<TEntity, TSignal> signalHandler) {
-            _entitySignals.GetDelegates(_entity).Add(signalHandler);
+            _entitySignals.GetDelegates(_entity)
+                .Add(new ReceiverDelegate(typeof(TSignal), signalHandler.GetInvoker(), signalHandler));
         }
 
         public virtual void Remove<TSignal>(ESHandler<TEntity> signalHandler) {
-            _entitySignals.GetDelegates(_entity).Remove(signalHandler);
+            _entitySignals.GetDelegates(_entity)
+                .RemoveAll(c => ReferenceEquals(c.Receiver, signalHandler));
         }
 
         public virtual void Remove<TSignal>(ESHandler<TEntity, TSignal> signalHandler) {
-            _entitySignals.GetDelegates(_entity).Remove(signalHandler);
+            _entitySignals.GetDelegates(_entity)
+                .RemoveAll(c => ReferenceEquals(c.Receiver, signalHandler));
         }
 
         public virtual void Dispose() {

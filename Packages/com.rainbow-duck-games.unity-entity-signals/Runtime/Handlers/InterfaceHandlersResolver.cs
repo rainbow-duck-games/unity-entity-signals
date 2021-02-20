@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using EntitySignals.Utility.Tact;
 using JetBrains.Annotations;
 
 namespace EntitySignals.Handlers {
@@ -12,7 +13,8 @@ namespace EntitySignals.Handlers {
                 .Select(i => {
                     var entityType = i.GetGenericArguments()[0];
                     var signalType = i.GetGenericArguments()[1];
-                    return new HandlerMeta(2, type.GetMethod("HandleSignal", new[] {entityType, signalType})) {
+                    var methodInfo = type.GetMethod("HandleSignal", new[] {entityType, signalType});
+                    return new HandlerMeta(2, type.GetMethodInvoker(methodInfo)) {
                         RequiredType = entityType,
                         SignalType = signalType
                     };
