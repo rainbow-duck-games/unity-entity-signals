@@ -6,7 +6,7 @@ using JetBrains.Annotations;
 
 namespace EntitySignals.Handlers {
     public class AttributeHandlersResolver : IHandlersResolver {
-        public IEnumerable<HandlerMeta> GetHandlers(Type type) {
+        public HandlerMeta[] GetHandlers(Type type) {
             var list = new List<HandlerMeta>();
             var all = type.GetMethods();
             foreach (var candidate in all) {
@@ -27,7 +27,7 @@ namespace EntitySignals.Handlers {
                 }
             }
 
-            return list;
+            return list.ToArray();
         }
 
         private static HandlerMeta SingleArgDelegate(SignalHandlerAttribute attr, Type type, MethodInfo candidate) {
