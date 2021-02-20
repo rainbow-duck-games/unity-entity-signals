@@ -1,6 +1,4 @@
-﻿using EntitySignals.Context;
-
-namespace EntitySignals {
+﻿namespace EntitySignals {
     public static class ES {
         private static readonly EntitySignals Default = new EntitySignals();
 

@@ -1,4 +1,4 @@
-﻿namespace EntitySignals.Context {
+﻿namespace EntitySignals {
     public interface IContext<out TEntity> {
         int Count { get; }
 

@@ -1,0 +1,23 @@
+﻿using System;
+using EntitySignals.Utility.Tact;
+
+namespace EntitySignals {
+    public class HandlerDelegate {
+        public readonly Type SignalType;
+        public readonly EfficientInvoker Invoker;
+        public readonly object Receiver;
+        public readonly int Args;
+        public Predicate<object> EntityPredicate = obj => true;
+
+        public HandlerDelegate(Type signalType, EfficientInvoker invoker, object receiver, int args = 2) {
+            SignalType = signalType;
+            Invoker = invoker;
+            Receiver = receiver;
+            Args = args;
+        }
+
+        public bool Valid(object entity, object signal) {
+            return SignalType == signal.GetType() && EntityPredicate.Invoke(entity);
+        }
+    }
+}
