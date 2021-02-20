@@ -1,21 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using EntitySignals.Utility.Tact;
 
 namespace EntitySignals.Handlers {
     public interface IHandlersResolver {
         HandlerMeta[] GetHandlers(Type type);
     }
-    
+
     public class HandlerMeta {
+        public readonly Type RequiredType;
+        public readonly Type SignalType;
         public readonly int ParamCount;
         public readonly EfficientInvoker MethodInvoker;
-        public Type RequiredType;
-        public Type SignalType;
 
-        public HandlerMeta(int paramCount, EfficientInvoker invoker) {
+        public HandlerMeta(Type requiredType, Type signalType, int paramCount, EfficientInvoker methodInvoker) {
+            RequiredType = requiredType;
+            SignalType = signalType;
             ParamCount = paramCount;
-            MethodInvoker = invoker;
+            MethodInvoker = methodInvoker;
         }
     }
 }

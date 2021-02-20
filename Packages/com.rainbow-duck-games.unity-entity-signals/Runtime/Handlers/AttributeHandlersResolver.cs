@@ -31,17 +31,17 @@ namespace EntitySignals.Handlers {
         }
 
         private static HandlerMeta SingleArgDelegate(SignalHandlerAttribute attr, Type type, MethodInfo candidate) {
-            return new HandlerMeta(1, type.GetMethodInvoker(candidate)) {
-                RequiredType = attr.EntityType,
-                SignalType = attr.SignalType ?? candidate.GetParameters()[0].ParameterType
-            };
+            return new HandlerMeta(
+                attr.EntityType,
+                attr.SignalType ?? candidate.GetParameters()[0].ParameterType,
+                1, type.GetMethodInvoker(candidate));
         }
 
         private static HandlerMeta TwoArgDelegate(SignalHandlerAttribute attr, Type type, MethodInfo candidate) {
-            return new HandlerMeta(2, type.GetMethodInvoker(candidate)) {
-                RequiredType = attr.EntityType ?? candidate.GetParameters()[0].ParameterType,
-                SignalType = attr.SignalType ?? candidate.GetParameters()[1].ParameterType
-            };
+            return new HandlerMeta(
+                attr.EntityType ?? candidate.GetParameters()[0].ParameterType,
+                attr.SignalType ?? candidate.GetParameters()[1].ParameterType,
+                2, type.GetMethodInvoker(candidate));
         }
     }
 

@@ -29,7 +29,6 @@ namespace EntitySignals {
         private ConditionalWeakTable<object, List<ReceiverDelegate>> _delegates =
             new ConditionalWeakTable<object, List<ReceiverDelegate>>();
 
-        // TODo Matcher
         private ConditionalWeakTable<Type, DynamicDelegate> _dynamics =
             new ConditionalWeakTable<Type, DynamicDelegate>();
 

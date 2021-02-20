@@ -1,35 +1,48 @@
-﻿using EntitySignals.Handlers;
+﻿using System.Linq;
+using EntitySignals.Handlers;
 using NUnit.Framework;
-using UnityEngine;
 
 namespace EntitySignals.Tests.Editor.Handlers {
     public class InterfaceHandlersResolverTest {
         [Test]
         public void ProcessReceiverClass() {
-            var es = new EntitySignals(new InterfaceHandlersResolver());
-            var entity = Object.Instantiate(new GameObject());
             var receiver = new TestReceiver();
+            var resolver = new InterfaceHandlersResolver();
 
-            es.On(entity).Add(receiver);
-            Assert.AreEqual(2, es.On(entity).Count);
+            var results = resolver.GetHandlers(typeof(TestReceiver));
+            Assert.AreEqual(2, results.Length);
 
-            es.On(entity).Send(1);
-            es.On(entity).Send('t');
-            es.On(entity).Remove(receiver);
+            var intHandler = results.First(m => m.SignalType == typeof(int));
+            Assert.AreEqual(2, intHandler.ParamCount);
+            Assert.AreEqual(typeof(string), intHandler.RequiredType);
+            intHandler.MethodInvoker.Invoke(receiver, "entity", 1);
+            receiver.Verify("Int", "entity", 1);
 
-            Assert.AreEqual(0, es.On(entity).Count);
-            receiver.Verify("First", entity, 1);
-            receiver.Verify("Second", entity, 't');
+            var charHandler = results.First(m => m.SignalType == typeof(char));
+            Assert.AreEqual(2, charHandler.ParamCount);
+            Assert.AreEqual(typeof(string), charHandler.RequiredType);
+            charHandler.MethodInvoker.Invoke(receiver, "entity", 't');
+            receiver.Verify("Char", "entity", 't');
         }
 
-        private class TestReceiver : Recorder, IReceive<GameObject, int>, IReceive<GameObject, char> {
-            public void HandleSignal(GameObject entity, int signal) {
-                Record("First", entity, signal);
+        [Test]
+        public void ProcessEmptyClass() {
+            var resolver = new InterfaceHandlersResolver();
+            var results = resolver.GetHandlers(typeof(EmptyReceiver));
+            Assert.AreEqual(0, results.Length);
+        }
+
+        private class TestReceiver : Recorder, IReceive<string, int>, IReceive<string, char> {
+            public void HandleSignal(string entity, int signal) {
+                Record("Int", entity, signal);
             }
 
-            public void HandleSignal(GameObject entity, char signal) {
-                Record("Second", entity, signal);
+            public void HandleSignal(string entity, char signal) {
+                Record("Char", entity, signal);
             }
+        }
+
+        private class EmptyReceiver : Recorder {
         }
     }
 }
