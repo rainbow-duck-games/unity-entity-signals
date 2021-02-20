@@ -1,4 +1,5 @@
 ﻿using System;
+using EntitySignals.Context;
 using EntitySignals.Handlers;
 using NUnit.Framework;
 using UnityEngine;
@@ -46,13 +47,13 @@ namespace EntitySignals.Tests.Editor {
             var recorder = new Recorder();
             var handler = (ESHandler<int>) ((a1) => { recorder.Record("First", a1); });
 
-            es.Global.Add(handler);
-            Assert.AreEqual(1, es.Global.Count);
+            es.On().Add(handler);
+            Assert.AreEqual(1, es.On().Count);
 
-            es.Global.Send(1);
-            es.Global.Dispose();
+            es.On().Send(1);
+            es.On().Dispose();
 
-            Assert.AreEqual(0, es.Global.Count);
+            Assert.AreEqual(0, es.On().Count);
             recorder.Verify("First", 1);
         }
 

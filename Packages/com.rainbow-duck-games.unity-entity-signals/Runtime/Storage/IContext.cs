@@ -14,4 +14,8 @@
 
         void Dispose();
     }
+
+    public delegate void ESHandler<in TSignal>(TSignal signal);
+
+    public delegate void ESHandler<in TEntity, in TSignal>(TEntity entity, TSignal signal);
 }
