@@ -7,21 +7,17 @@ using EntitySignals.Handlers;
 using EntitySignals.Utility.Tact;
 
 namespace EntitySignals.Storage {
-    public class EntityStorage : IStorage {
+    public class EntitySignalsStorage {
         private readonly IHandlersResolver _resolver;
 
-        private readonly ConditionalWeakTable<object, List<ReceiverDelegate>> _delegates =
+        private ConditionalWeakTable<object, List<ReceiverDelegate>> _delegates =
             new ConditionalWeakTable<object, List<ReceiverDelegate>>();
 
-        public EntityStorage(IHandlersResolver resolver) {
+        public EntitySignalsStorage(IHandlersResolver resolver) {
             _resolver = resolver;
         }
 
-        public int Count => 0;
-
-        public IContext<object> On() {
-            throw new NotImplementedException();
-        }
+        public int Count => 0; // ToDo
 
         public IContext<TEntity> On<TEntity>(TEntity entity) {
             if (entity == null)
@@ -30,12 +26,8 @@ namespace EntitySignals.Storage {
             return new EntityContext<TEntity>(_resolver, this, entity);
         }
 
-        public IContext<TEntity> On<TEntity>(Predicate<TEntity> entity) {
-            throw new NotImplementedException();
-        }
-
         public void Dispose() {
-            throw new NotImplementedException();
+            _delegates = new ConditionalWeakTable<object, List<ReceiverDelegate>>();
         }
 
         public void Dispose<TEntity>(TEntity entity) {
@@ -66,18 +58,18 @@ namespace EntitySignals.Storage {
             return _delegates.GetValue(entity, k => new List<ReceiverDelegate>());
         }
 
-        private class EntityContext<TEntity> : IContext<TEntity> {
+        private sealed class EntityContext<TEntity> : IContext<TEntity> {
             private readonly IHandlersResolver _resolver;
-            private readonly EntityStorage _entityStorage;
+            private readonly EntitySignalsStorage _entitySignalsStorage;
             private readonly TEntity _entity;
 
-            public EntityContext(IHandlersResolver resolver, EntityStorage entityStorage, TEntity entity = default) {
+            public EntityContext(IHandlersResolver resolver, EntitySignalsStorage entitySignalsStorage, TEntity entity = default) {
                 _resolver = resolver;
-                _entityStorage = entityStorage;
+                _entitySignalsStorage = entitySignalsStorage;
                 _entity = entity;
             }
 
-            public virtual void Add(object receiver) {
+            public void Add(object receiver) {
                 var receiverType = receiver.GetType();
                 var entityType = typeof(TEntity);
                 var handlers = _resolver.GetHandlers(receiverType)
@@ -89,43 +81,43 @@ namespace EntitySignals.Storage {
                     throw new Exception(
                         $"Can't bind method {receiver.GetType().Name} to entity {typeof(TEntity)}: No methods matched signature");
 
-                _entityStorage.GetDelegates(_entity).AddRange(handlers);
+                _entitySignalsStorage.GetDelegates(_entity).AddRange(handlers);
             }
 
-            public virtual void Remove(object receiver) {
-                _entityStorage.GetDelegates(_entity)
+            public void Remove(object receiver) {
+                _entitySignalsStorage.GetDelegates(_entity)
                     .RemoveAll(rd => rd.Receiver == receiver);
             }
 
-            public virtual void Add<TSignal>(ESHandler<TSignal> signalHandler) {
-                _entityStorage.GetDelegates(_entity)
+            public void Add<TSignal>(ESHandler<TSignal> signalHandler) {
+                _entitySignalsStorage.GetDelegates(_entity)
                     .Add(new ReceiverDelegate(typeof(TSignal), signalHandler.GetInvoker(), signalHandler, 1));
             }
 
-            public virtual void Add<TSignal>(ESHandler<TEntity, TSignal> signalHandler) {
-                _entityStorage.GetDelegates(_entity)
+            public void Add<TSignal>(ESHandler<TEntity, TSignal> signalHandler) {
+                _entitySignalsStorage.GetDelegates(_entity)
                     .Add(new ReceiverDelegate(typeof(TSignal), signalHandler.GetInvoker(), signalHandler));
             }
 
-            public virtual void Remove<TSignal>(ESHandler<TEntity> signalHandler) {
-                _entityStorage.GetDelegates(_entity)
+            public void Remove<TSignal>(ESHandler<TSignal> signalHandler) {
+                _entitySignalsStorage.GetDelegates(_entity)
                     .RemoveAll(c => ReferenceEquals(c.Receiver, signalHandler));
             }
 
-            public virtual void Remove<TSignal>(ESHandler<TEntity, TSignal> signalHandler) {
-                _entityStorage.GetDelegates(_entity)
+            public void Remove<TSignal>(ESHandler<TEntity, TSignal> signalHandler) {
+                _entitySignalsStorage.GetDelegates(_entity)
                     .RemoveAll(c => ReferenceEquals(c.Receiver, signalHandler));
             }
 
-            public virtual void Dispose() {
-                _entityStorage.Dispose(_entity);
+            public void Dispose() {
+                _entitySignalsStorage.Dispose(_entity);
             }
 
-            public virtual void Send<TSignal>(TSignal arg) {
-                _entityStorage.Send(_entity, arg);
+            public void Send<TSignal>(TSignal arg) {
+                _entitySignalsStorage.Send(_entity, arg);
             }
 
-            public int Count => _entityStorage.GetDelegates(_entity).Count;
+            public int Count => _entitySignalsStorage.GetDelegates(_entity).Count;
         }
     }
 

@@ -7,33 +7,41 @@ using EntitySignals.Storage;
 
 namespace EntitySignals {
     public class EntitySignals {
-        private readonly IStorage _storage;
+        private readonly GlobalSignalsStorage _global;
+        private readonly EntitySignalsStorage _entity;
+        // ToDo Dynamic?
 
-        public EntitySignals(IHandlersResolver resolver = null, IStorage storage = null) {
-            _storage = storage ??
-                       new EntityStorage(resolver ?? new CachedHandlersResolver(new AttributeHandlersResolver()));
+        public EntitySignals(IHandlersResolver resolver = null) {
+            var handlersResolver = resolver ?? new CachedHandlersResolver(new AttributeHandlersResolver());
+            _global = new GlobalSignalsStorage(handlersResolver);
+            _entity = new EntitySignalsStorage(handlersResolver);
         }
 
-        public int Count => _storage.Count;
+        public int Count => _global.Count + _entity.Count;
 
         public IContext<object> On() {
-            return _storage.On();
+            return _global.On();
         }
 
         public IContext<TEntity> On<TEntity>(TEntity entity) {
-            return _storage.On(entity);
+            return _entity.On(entity);
         }
 
         public IContext<TEntity> On<TEntity>(Predicate<TEntity> predicate) {
-            return _storage.On(predicate);
+            throw new NotImplementedException();
         }
 
         public void Dispose() {
-            _storage.Dispose();
+            _global.Dispose();
+            _entity.Dispose();
         }
 
-        internal void Dispose(object instance) {
-            _storage.Dispose(instance);
+        public void Dispose<TEntity>(TEntity instance) {
+            _entity.Dispose(instance);
+        }
+        
+        public void Dispose<TEntity>(Predicate<TEntity> predicate) {
+            throw new NotImplementedException();
         }
     }
 }

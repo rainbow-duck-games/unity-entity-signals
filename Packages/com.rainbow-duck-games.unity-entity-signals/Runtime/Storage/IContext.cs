@@ -7,7 +7,7 @@
         void Add<TSignal>(ESHandler<TEntity, TSignal> signalHandler);
 
         void Remove(object receiver);
-        void Remove<TSignal>(ESHandler<TEntity> signalHandler);
+        void Remove<TSignal>(ESHandler<TSignal> signalHandler);
         void Remove<TSignal>(ESHandler<TEntity, TSignal> signalHandler);
 
         void Send<TSignal>(TSignal arg);
