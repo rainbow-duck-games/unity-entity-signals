@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using EntitySignals.Handlers;
 using EntitySignals.Storages;
 
@@ -18,7 +19,8 @@ namespace EntitySignals.Contexts {
         }
 
         public override void Send<TSignal>(TSignal arg) {
-            ExecuteSend(Entity, arg, GetContextDelegates());
+            // Copy current list to avoid concurrent modifications
+            ExecuteSend(Entity, arg, GetContextDelegates().ToList());
         }
 
         public override void Dispose() {

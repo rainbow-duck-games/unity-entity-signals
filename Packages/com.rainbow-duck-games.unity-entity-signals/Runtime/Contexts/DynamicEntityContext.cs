@@ -1,4 +1,5 @@
-﻿using EntitySignals.Handlers;
+﻿using System.Linq;
+using EntitySignals.Handlers;
 using EntitySignals.Storages;
 
 namespace EntitySignals.Contexts {
@@ -8,8 +9,9 @@ namespace EntitySignals.Contexts {
         }
 
         public override void Send<TSignal>(TSignal arg) {
-            ExecuteSend(Entity, arg, Storage.GetDelegates(Entity));
-            ExecuteSend(Entity, arg, Storage.GetDelegates<TEntity>());
+            // Copy current list to avoid concurrent modifications
+            ExecuteSend(Entity, arg, GetContextDelegates().ToList());
+            ExecuteSend(Entity, arg, Storage.GetDelegates<TEntity>().ToList());
         }
     }
 }

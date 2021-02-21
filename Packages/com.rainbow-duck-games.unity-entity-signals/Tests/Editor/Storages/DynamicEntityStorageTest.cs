@@ -67,5 +67,45 @@ namespace EntitySignals.Tests.Editor.Storages {
             Storage.On<TestEntity>().Remove(delegateB);
             Assert.AreEqual(0, Storage.On<TestEntity>().Count);
         }
+
+        [Test]
+        public void DynamicAddHandlerOnSend() {
+            var recorder = new Recorder();
+            var entity = new TestEntity();
+            var delegateA = new ESHandler<int>(i => { recorder.Record("A", i); });
+            var delegateB = new ESHandler<TestEntity, char>((a, b) => {
+                recorder.Record("B", a, b);
+                Storage.On<TestEntity>().Add(delegateA);
+            });
+
+            Storage.On<TestEntity>().Add(delegateB);
+            Storage.On(entity).Send(1);
+            Storage.On(entity).Send('t');
+            recorder.Never("A");
+            recorder.Verify("B", entity, 't');
+            Assert.AreEqual(2, Storage.On<TestEntity>().Count);
+            
+            Storage.On(entity).Send(42);
+            recorder.Verify("A", 42);
+        }
+
+        [Test]
+        public void DynamicRemoveHandlerOnSend() {
+            var recorder = new Recorder();
+            var entity = new TestEntity();
+            var delegateA = new ESHandler<int>(i => { recorder.Record("A", i); });
+            var delegateB = new ESHandler<TestEntity, char>((a, b) => {
+                recorder.Record("B", a, b);
+                Storage.On<TestEntity>().Remove(delegateA);
+            });
+
+            Storage.On<TestEntity>().Add(delegateA);
+            Storage.On<TestEntity>().Add(delegateB);
+            Storage.On(entity).Send(1);
+            Storage.On(entity).Send('t');
+            recorder.Verify("A", 1);
+            recorder.Verify("B", entity, 't');
+            Assert.AreEqual(1, Storage.On<TestEntity>().Count);
+        }
     }
 }

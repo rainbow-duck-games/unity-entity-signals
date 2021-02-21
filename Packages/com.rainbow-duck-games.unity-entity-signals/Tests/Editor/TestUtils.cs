@@ -13,5 +13,9 @@ namespace EntitySignals.Tests.Editor {
             Assert.IsTrue(_records.ContainsKey(key), $"No record with key '{key}' found for instance {GetType()}");
             Assert.AreEqual(_records[key], args, $"Arguments of the call are not matching for instance {GetType()}");
         }
+
+        public void Never(string key) {
+            Assert.IsFalse(_records.ContainsKey(key), $"Record with key '{key}' shouldn't be called for instance {GetType()}");
+        }
     }
 }

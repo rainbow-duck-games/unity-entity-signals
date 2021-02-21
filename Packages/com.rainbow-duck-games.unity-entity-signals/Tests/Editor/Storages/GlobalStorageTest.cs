@@ -68,6 +68,46 @@ namespace EntitySignals.Tests.Editor.Storages {
         }
 
         [Test]
+        public void AddHandlerOnSend() {
+            var storage = new GlobalStorage(null);
+            var recorder = new Recorder();
+            var delegateA = new ESHandler<int>(i => { recorder.Record("A", i); });
+            var delegateB = new ESHandler<object, char>((a, b) => {
+                recorder.Record("B", a, b);
+                storage.On().Add(delegateA);
+            });
+
+            storage.On().Add(delegateB);
+            storage.On().Send(1);
+            storage.On().Send('t');
+            recorder.Never("A");
+            recorder.Verify("B", null, 't');
+            Assert.AreEqual(2, storage.On().Count);
+            
+            storage.On().Send(42);
+            recorder.Verify("A", 42);
+        }
+
+        [Test]
+        public void RemoveHandlerOnSend() {
+            var storage = new GlobalStorage(null);
+            var recorder = new Recorder();
+            var delegateA = new ESHandler<int>(i => { recorder.Record("A", i); });
+            var delegateB = new ESHandler<object, char>((a, b) => {
+                recorder.Record("B", a, b);
+                storage.On().Remove(delegateA);
+            });
+
+            storage.On().Add(delegateA);
+            storage.On().Add(delegateB);
+            storage.On().Send(1);
+            storage.On().Send('t');
+            recorder.Verify("A", 1);
+            recorder.Verify("B", null, 't');
+            Assert.AreEqual(1, storage.On().Count);
+        }
+
+        [Test]
         public void DisposeDelegates() {
             var handler = new MockHandlerResolver();
             var storage = new GlobalStorage(handler);

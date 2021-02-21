@@ -69,6 +69,46 @@ namespace EntitySignals.Tests.Editor.Storages {
         }
 
         [Test]
+        public void AddHandlerOnSend() {
+            var recorder = new Recorder();
+            var entity = new TestEntity();
+            var delegateA = new ESHandler<int>(i => { recorder.Record("A", i); });
+            var delegateB = new ESHandler<TestEntity, char>((a, b) => {
+                recorder.Record("B", a, b);
+                Storage.On(a).Add(delegateA);
+            });
+
+            Storage.On(entity).Add(delegateB);
+            Storage.On(entity).Send(1);
+            Storage.On(entity).Send('t');
+            recorder.Never("A");
+            recorder.Verify("B", entity, 't');
+            Assert.AreEqual(2, Storage.On(entity).Count);
+            
+            Storage.On(entity).Send(42);
+            recorder.Verify("A", 42);
+        }
+
+        [Test]
+        public void RemoveHandlerOnSend() {
+            var recorder = new Recorder();
+            var entity = new TestEntity();
+            var delegateA = new ESHandler<int>(i => { recorder.Record("A", i); });
+            var delegateB = new ESHandler<TestEntity, char>((a, b) => {
+                recorder.Record("B", a, b);
+                Storage.On(a).Remove(delegateA);
+            });
+
+            Storage.On(entity).Add(delegateA);
+            Storage.On(entity).Add(delegateB);
+            Storage.On(entity).Send(1);
+            Storage.On(entity).Send('t');
+            recorder.Verify("A", 1);
+            recorder.Verify("B", entity, 't');
+            Assert.AreEqual(1, Storage.On(entity).Count);
+        }
+
+        [Test]
         public void DisposeDelegates() {
             var entity = new TestEntity();
             Assert.AreEqual(0, Storage.On(entity).Count);

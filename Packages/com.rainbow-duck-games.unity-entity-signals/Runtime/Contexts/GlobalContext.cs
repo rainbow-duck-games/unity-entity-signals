@@ -31,7 +31,8 @@ namespace EntitySignals.Contexts {
         }
 
         public override void Send<TSignal>(TSignal arg) {
-            ExecuteSend(null, arg, GetContextDelegates());
+            // Copy current list to avoid concurrent modifications
+            ExecuteSend(null, arg, GetContextDelegates().ToList());
         }
 
         protected override List<HandlerDelegate> GetContextDelegates() {
