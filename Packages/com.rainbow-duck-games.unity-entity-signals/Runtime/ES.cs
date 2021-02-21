@@ -1,4 +1,7 @@
 ﻿namespace EntitySignals {
+    /// <summary>
+    /// Static alias for default implementation of EntitySignals
+    /// </summary>
     public static class ES {
         private static readonly EntitySignals Default = new EntitySignals();
 
