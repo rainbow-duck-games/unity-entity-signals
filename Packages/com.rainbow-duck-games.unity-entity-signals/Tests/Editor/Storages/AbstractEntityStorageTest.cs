@@ -119,6 +119,17 @@ namespace EntitySignals.Tests.Editor.Storages {
         }
 
         [Test]
+        public void DisposeEntity() {
+            var receiver = new TestReceiver();
+            var entity = new TestEntity();
+            Storage.On(entity).Add(receiver);
+            Assert.AreEqual(2, Storage.On(entity).Count);
+            
+            Storage.On(entity).Dispose();
+            Assert.AreEqual(0, Storage.On(entity).Count);
+        }
+
+        [Test]
         public void CountDelegates() {
             var entity = new TestEntity();
             Storage.On(entity).Add(new ESHandler<int>(i => { }));

@@ -107,5 +107,15 @@ namespace EntitySignals.Tests.Editor.Storages {
             recorder.Verify("B", entity, 't');
             Assert.AreEqual(1, Storage.On<TestEntity>().Count);
         }
+
+        [Test]
+        public void DynamicDispose() {
+            var receiver = new TestReceiver();
+            Storage.On<TestEntity>().Add(receiver);
+            Assert.AreEqual(2, Storage.On<TestEntity>().Count);
+            
+            Storage.On<TestEntity>().Dispose();
+            Assert.AreEqual(0, Storage.On<TestEntity>().Count);
+        }
     }
 }

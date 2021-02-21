@@ -24,7 +24,7 @@ namespace EntitySignals.Storages {
             return new EntityContext<TEntity, EntityStorage>(Resolver, this, entity);
         }
 
-        public void Dispose() {
+        public virtual void Dispose() {
             Delegates = new ConditionalWeakTable<object, List<HandlerDelegate>>();
         }
 
