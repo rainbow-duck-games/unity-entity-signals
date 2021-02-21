@@ -8,22 +8,6 @@ using Object = UnityEngine.Object;
 
 namespace EntitySignals.Tests.Editor {
     public class EntitySignalsTest {
-        // ES.Subscribe(Any<Type>(), handler, ...);
-        // ES.Register<Type>(entity);
-        // Handler interface - part of the signal?
-        //
-        // Currents issues:
-        // - Messy in calls(what context used?) & signal instances
-        // - Hard to debug(no logging, no misconfiguration detection) - strict mode required?
-        // - Hard to test(required to pass the whole type as receiver)
-        // - Weak signatures(a lot of HandleSignal methods, hard to find out what is what)
-        //
-        // Features:
-        // - Entity-related handlers
-        // - Matching entity by predicate
-        // - Strict mode to detect misconfiguration
-        // - Verbose mode to detect misconfiguration(incl.on entity level)
-
         [Test]
         public void DefaultSignalContext() {
             var entity = Object.Instantiate(new GameObject());
@@ -108,30 +92,6 @@ namespace EntitySignals.Tests.Editor {
             Assert.AreEqual(0, es.On(entity).Count);
             receiver.Verify("First", entity, 1);
             receiver.Verify("Second", 't');
-        }
-
-        [Test]
-        public void ThrowIfArgumentMismatch() {
-            var es = new EntitySignals();
-            var entity = Object.Instantiate(new GameObject());
-            var receiver = new WrongTestReceiver();
-
-            var e = Assert.Throws<Exception>(() => { es.On(entity).Add(receiver); });
-            Assert.AreEqual(
-                $"Can't bind method {nameof(WrongTestReceiver)}: Method WrongHandler has wrong amount of arguments",
-                e.Message);
-        }
-
-        [Test]
-        public void ThrowIfNothingToBind() {
-            var es = new EntitySignals();
-            var entity = Object.Instantiate(new GameObject());
-            var receiver = new ComponentReceiver();
-
-            var e = Assert.Throws<Exception>(() => { es.On(entity).Add(receiver); });
-            Assert.AreEqual(
-                $"Can't bind method {nameof(ComponentReceiver)} to entity UnityEngine.GameObject: No methods matched signature",
-                e.Message);
         }
 
         private class TestReceiver : Recorder {

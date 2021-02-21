@@ -15,7 +15,6 @@ namespace EntitySignals.Tests.Editor.Storages {
 
             storage.On().Add(receiver);
             Assert.AreEqual(2, storage.Count);
-            handler.Verify("GetHandlers", typeof(TestReceiver));
             
             storage.On().Send(1);
             storage.On().Send('t');
@@ -77,7 +76,6 @@ namespace EntitySignals.Tests.Editor.Storages {
             storage.On().Add(new TestReceiver());
             storage.Dispose();
             Assert.AreEqual(0, storage.Count);
-            handler.Verify("GetHandlers", typeof(TestReceiver));
         }
 
         [Test]
@@ -88,9 +86,25 @@ namespace EntitySignals.Tests.Editor.Storages {
             Assert.AreEqual(1, storage.Count);
         }
 
-        private class MockHandlerResolver : Recorder, IHandlersResolver {
+        [Test]
+        public void ThrowIfNoHandlers() {
+            var handler = new NoHandlersResolver();
+            var storage = new GlobalStorage(handler);
+            var receiver = new TestReceiver();
+
+            var e = Assert.Throws<Exception>(() => storage.On().Add(receiver));
+            Assert.AreEqual("Can't bind method TestReceiver to global: No methods matched signature", e.Message);
+        }
+
+        private class NoHandlersResolver : IHandlersResolver {
             public HandlerMeta[] GetHandlers(Type type) {
-                Record("GetHandlers", type);
+                Assert.AreEqual(typeof(TestReceiver), type);
+                return new HandlerMeta[] { };
+            }
+        }
+
+        private class MockHandlerResolver : IHandlersResolver {
+            public HandlerMeta[] GetHandlers(Type type) {
                 Assert.AreEqual(typeof(TestReceiver), type);
                 return new[] {
                     new HandlerMeta(null, typeof(int), 1, EfficientInvoker.ForMethod(typeof(TestReceiver), "IntReceive")),
