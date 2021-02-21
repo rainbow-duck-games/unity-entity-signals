@@ -22,7 +22,7 @@ namespace EntitySignals.Contexts {
             if (handlers.Length == 0)
                 throw new Exception(
                     $"Can't bind method {receiver.GetType().Name} to global: No methods matched signature");
-
+            
             GetContextDelegates().AddRange(handlers);
         }
 

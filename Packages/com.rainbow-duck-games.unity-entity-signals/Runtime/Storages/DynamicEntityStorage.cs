@@ -16,12 +16,6 @@ namespace EntitySignals.Storages {
             return new DynamicTypeContext<TEntity>(Resolver, this);
         }
 
-        internal List<HandlerDelegate> GetRelatedDelegates<TEntity>(TEntity entity) {
-            return GetDelegates(entity)
-                .Concat(GetDelegates<TEntity>())
-                .ToList();
-        }
-
         internal List<HandlerDelegate> GetDelegates<TEntity>() {
             return Delegates.GetValue(typeof(TEntity), key => new List<HandlerDelegate>());
         }

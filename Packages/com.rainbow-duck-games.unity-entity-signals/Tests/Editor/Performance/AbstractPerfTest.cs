@@ -64,40 +64,40 @@ namespace EntitySignals.Tests.Editor.Performance {
                 () => new SignalsTestReceiver()
             ));
         }
-    }
 
-    public class TestEntity {
-    }
-
-    internal class AttributeTestReceiver : Recorder {
-        [SignalHandler]
-        public void OnGameObjectFirstSignal(TestEntity obj, int x) {
-            Record("First", obj, x);
+        protected class TestEntity {
         }
-    }
 
-    internal class AttributeCacheTestReceiver : Recorder {
-        [SignalHandler]
-        public void OnGameObjectFirstSignal(TestEntity obj, int x) {
-            Record("First", obj, x);
+        private class AttributeTestReceiver : Recorder {
+            [SignalHandler]
+            public void OnGameObjectFirstSignal(TestEntity obj, int x) {
+                Record("First", obj, x);
+            }
         }
-    }
 
-    internal class InterfaceTestReceiver : Recorder, IReceive<TestEntity, int> {
-        public void HandleSignal(TestEntity entity, int signal) {
-            Record("First", entity, signal);
+        private class AttributeCacheTestReceiver : Recorder {
+            [SignalHandler]
+            public void OnGameObjectFirstSignal(TestEntity obj, int x) {
+                Record("First", obj, x);
+            }
         }
-    }
 
-    internal class InterfaceCacheTestReceiver : Recorder, IReceive<TestEntity, int> {
-        public void HandleSignal(TestEntity entity, int signal) {
-            Record("First", entity, signal);
+        private class InterfaceTestReceiver : Recorder, IReceive<TestEntity, int> {
+            public void HandleSignal(TestEntity entity, int signal) {
+                Record("First", entity, signal);
+            }
         }
-    }
 
-    internal class SignalsTestReceiver : Recorder, IReceive<int> {
-        public void HandleSignal(int arg) {
-            Record("First", arg);
+        private class InterfaceCacheTestReceiver : Recorder, IReceive<TestEntity, int> {
+            public void HandleSignal(TestEntity entity, int signal) {
+                Record("First", entity, signal);
+            }
+        }
+
+        protected class SignalsTestReceiver : Recorder, IReceive<int> {
+            public void HandleSignal(int arg) {
+                Record("First", arg);
+            }
         }
     }
 }

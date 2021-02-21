@@ -8,7 +8,8 @@ namespace EntitySignals.Contexts {
         }
 
         public override void Send<TSignal>(TSignal arg) {
-            ExecuteSend(Entity, arg, Storage.GetRelatedDelegates(Entity));
+            ExecuteSend(Entity, arg, Storage.GetDelegates(Entity));
+            ExecuteSend(Entity, arg, Storage.GetDelegates<TEntity>());
         }
     }
 }
