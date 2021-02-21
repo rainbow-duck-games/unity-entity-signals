@@ -1,19 +1,17 @@
-﻿using System;
-using EntitySignals.Handlers;
-using EntitySignals.Storage;
+﻿using EntitySignals.Handlers;
+using EntitySignals.Storages;
 
 #pragma warning disable 618
 
 namespace EntitySignals {
     public class EntitySignals {
-        private readonly GlobalSignalsStorage _global;
-        private readonly EntitySignalsStorage _entity;
-        // ToDo Dynamic?
+        private readonly GlobalSignals _global;
+        private readonly DynamicSignals _entity;
 
         public EntitySignals(IHandlersResolver resolver = null) {
             var handlersResolver = resolver ?? new CachedHandlersResolver(new AttributeHandlersResolver());
-            _global = new GlobalSignalsStorage(handlersResolver);
-            _entity = new EntitySignalsStorage(handlersResolver);
+            _global = new GlobalSignals(handlersResolver);
+            _entity = new DynamicSignals(handlersResolver);
         }
 
         public int Count => _global.Count + _entity.Count;
@@ -26,8 +24,8 @@ namespace EntitySignals {
             return _entity.On(entity);
         }
 
-        public IContext<TEntity> On<TEntity>(Predicate<TEntity> predicate) {
-            throw new NotImplementedException();
+        public IContext<TEntity> On<TEntity>() {
+            return _entity.On<TEntity>();
         }
 
         public void Dispose() {
@@ -39,8 +37,8 @@ namespace EntitySignals {
             _entity.Dispose(instance);
         }
         
-        public void Dispose<TEntity>(Predicate<TEntity> predicate) {
-            throw new NotImplementedException();
+        public void Dispose<TEntity>() {
+            _entity.Dispose<TEntity>();
         }
     }
 }

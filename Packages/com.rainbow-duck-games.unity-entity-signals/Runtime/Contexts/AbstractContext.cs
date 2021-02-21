@@ -7,11 +7,12 @@ using EntitySignals.Utility.Tact;
 namespace EntitySignals.Contexts {
     public abstract class AbstractContext<TEntity> : IContext<TEntity> {
         protected readonly IHandlersResolver Resolver;
+
         protected AbstractContext(IHandlersResolver resolver) {
             Resolver = resolver;
         }
 
-        public virtual int Count => GetContextDelegates().Count; 
+        public virtual int Count => GetContextDelegates().Count;
 
         public virtual void Add(object receiver) {
             var receiverType = receiver.GetType();
@@ -25,40 +26,35 @@ namespace EntitySignals.Contexts {
                 throw new Exception(
                     $"Can't bind method {receiver.GetType().Name} to entity {typeof(TEntity)}: No methods matched signature");
 
-            GetContextDelegates().AddRange(handlers);
-        }
-
-        public void Remove(object receiver) {
-            GetContextDelegates()
-                .RemoveAll(rd => rd.Receiver == receiver);
+            AddHandlers(handlers);
         }
 
         public void Add<TSignal>(ESHandler<TSignal> signalHandler) {
-            GetContextDelegates()
-                .Add(new HandlerDelegate(typeof(TSignal), signalHandler.GetInvoker(), signalHandler, 1));
+            AddHandlers(new HandlerDelegate(typeof(TSignal), signalHandler.GetInvoker(), signalHandler, 1));
         }
 
         public void Add<TSignal>(ESHandler<TEntity, TSignal> signalHandler) {
-            GetContextDelegates()
-                .Add(new HandlerDelegate(typeof(TSignal), signalHandler.GetInvoker(), signalHandler));
+            AddHandlers(new HandlerDelegate(typeof(TSignal), signalHandler.GetInvoker(), signalHandler));
+        }
+
+        public void Remove(object receiver) {
+            RemoveHandlers(receiver);
         }
 
         public void Remove<TSignal>(ESHandler<TSignal> signalHandler) {
-            GetContextDelegates()
-                .RemoveAll(c => ReferenceEquals(c.Receiver, signalHandler));
+            RemoveHandlers(signalHandler);
         }
 
         public void Remove<TSignal>(ESHandler<TEntity, TSignal> signalHandler) {
-            GetContextDelegates()
-                .RemoveAll(c => ReferenceEquals(c.Receiver, signalHandler));
+            RemoveHandlers(signalHandler);
         }
 
         public abstract void Send<TSignal>(TSignal arg);
 
-        protected void ExecuteSend(object entity, object signal) {
+        protected void ExecuteSend(object entity, object signal, List<HandlerDelegate> delegates) {
             // TODO Strict mode
-            
-            GetContextDelegates()
+
+            delegates
                 .ForEach(rd => {
                     if (!rd.Valid(entity, signal))
                         return;
@@ -73,9 +69,18 @@ namespace EntitySignals.Contexts {
                     }
                 });
         }
-        
+
         public abstract void Dispose();
 
         protected abstract List<HandlerDelegate> GetContextDelegates();
+
+        private void AddHandlers(params HandlerDelegate[] handlers) {
+            GetContextDelegates().AddRange(handlers);
+        }
+
+        private void RemoveHandlers(object receiver) {
+            GetContextDelegates()
+                .RemoveAll(rd => ReferenceEquals(rd.Receiver, receiver));
+        }
     }
 }

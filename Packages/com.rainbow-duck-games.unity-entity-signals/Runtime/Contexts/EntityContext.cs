@@ -1,28 +1,27 @@
 ﻿using System.Collections.Generic;
 using EntitySignals.Handlers;
-using EntitySignals.Storage;
 
 namespace EntitySignals.Contexts {
-    public class EntityContext<TEntity> : AbstractContext<TEntity> {
-        private readonly EntitySignalsStorage _entitySignalsStorage;
+    public class EntityContext<TEntity, TSignals> : AbstractContext<TEntity> where TSignals : Storages.EntitySignals {
+        protected readonly TSignals Storage;
         protected readonly TEntity Entity;
 
-        public EntityContext(IHandlersResolver resolver, EntitySignalsStorage entitySignalsStorage,
+        public EntityContext(IHandlersResolver resolver, TSignals storage,
             TEntity entity = default) : base(resolver) {
-            _entitySignalsStorage = entitySignalsStorage;
+            Storage = storage;
             Entity = entity;
         }
 
         protected override List<HandlerDelegate> GetContextDelegates() {
-            return _entitySignalsStorage.GetDelegates(Entity);
+            return Storage.GetDelegates(Entity);
         }
 
         public override void Send<TSignal>(TSignal arg) {
-            ExecuteSend(Entity, arg);
+            ExecuteSend(Entity, arg, GetContextDelegates());
         }
 
         public override void Dispose() {
-            _entitySignalsStorage.Dispose(Entity);
+            Storage.Dispose(Entity);
         }
     }
 }

@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using EntitySignals.Handlers;
-using EntitySignals.Storage;
+using EntitySignals.Storages;
 
 namespace EntitySignals.Contexts {
     public sealed class GlobalContext : AbstractContext<object> {
-        private readonly GlobalSignalsStorage _storage;
+        private readonly GlobalSignals _storage;
 
-        public GlobalContext(IHandlersResolver resolver, GlobalSignalsStorage storage) : base(resolver) {
+        public GlobalContext(IHandlersResolver resolver, GlobalSignals storage) : base(resolver) {
             _storage = storage;
         }
 
@@ -23,15 +23,15 @@ namespace EntitySignals.Contexts {
                 throw new Exception(
                     $"Can't bind method {receiver.GetType().Name} to global: No methods matched signature");
 
-            _storage.GetDelegates().AddRange(handlers);
+            GetContextDelegates().AddRange(handlers);
         }
 
         public override void Dispose() {
-            _storage.Dispose();
+            GetContextDelegates().Clear();
         }
 
         public override void Send<TSignal>(TSignal arg) {
-            ExecuteSend(null, arg);
+            ExecuteSend(null, arg, GetContextDelegates());
         }
 
         protected override List<HandlerDelegate> GetContextDelegates() {

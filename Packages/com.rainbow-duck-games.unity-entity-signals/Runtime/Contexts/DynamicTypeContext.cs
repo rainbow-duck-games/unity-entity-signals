@@ -1,17 +1,18 @@
-﻿using System.Collections.Generic;
-using EntitySignals.Contexts;
+﻿using System;
+using System.Collections.Generic;
 using EntitySignals.Handlers;
+using EntitySignals.Storages;
 
-namespace EntitySignals.Storage {
+namespace EntitySignals.Contexts {
     public class DynamicTypeContext<TEntity> : AbstractContext<TEntity> {
-        private readonly DynamicSignalsStorage _storage;
+        private readonly DynamicSignals _storage;
 
-        public DynamicTypeContext(IHandlersResolver resolver, DynamicSignalsStorage storage) : base(resolver) {
+        public DynamicTypeContext(IHandlersResolver resolver, DynamicSignals storage) : base(resolver) {
             _storage = storage;
         }
 
         public override void Send<TSignal>(TSignal arg) {
-            // ToDo dynamic ExecuteSend();
+            throw new NotImplementedException("Dynamic ExecuteSend() is not implemented yet");
         }
 
         public override void Dispose() {
