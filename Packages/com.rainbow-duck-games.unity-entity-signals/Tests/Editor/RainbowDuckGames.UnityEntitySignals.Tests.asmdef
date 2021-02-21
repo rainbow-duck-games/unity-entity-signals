@@ -5,6 +5,7 @@
         "RainbowDuckGames.UnityEntitySignals",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
+        "Unity.PerformanceTesting",
         "Homebrew.Signals"
     ],
     "includePlatforms": [

@@ -3,7 +3,13 @@
   "displayName": "Entity Signals",
   "version": "0.1.0",
   "unity": "2020.1",
-  "description": "",
+  "description": "Entity Signals is a library to use pub-sub pattern related to entities. Allows to bind to single entity or to a type.",
+  "keywords": [
+    "pubsub",
+    "events",
+    "signals",
+    "emit"
+  ],
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/@rainbow-duck-games"
   },

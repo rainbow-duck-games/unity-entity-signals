@@ -1,72 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using EntitySignals.Context;
+﻿using EntitySignals.Handlers;
+using EntitySignals.Storages;
 
 #pragma warning disable 618
 
 namespace EntitySignals {
-    public static class ES {
-        private static readonly EntitySignals Default = new EntitySignals();
-
-        public static IContext<object> Global => Default.Global;
-
-        public static IContext<TEntity> On<TEntity>(TEntity entity) {
-            return Default.On(entity);
-        }
-
-        public static void Dispose() {
-            Default.Dispose();
-        }
-    }
-
     public class EntitySignals {
-        // TODo Matcher
-        private static HandlersCache _cache;
-        private readonly List<Delegate> _globalDelegates = new List<Delegate>();
+        private readonly GlobalStorage _global;
+        private readonly DynamicStorage _entity;
 
-        private ConditionalWeakTable<object, List<Delegate>> _delegates =
-            new ConditionalWeakTable<object, List<Delegate>>();
-
-        public readonly IContext<object> Global;
-
-        public EntitySignals(HandlersCache cache = null) {
-            _cache = cache ?? new HandlersCache();
-            Global = new NullContext(_cache, this);
+        public EntitySignals(IHandlersResolver resolver = null) {
+            var handlersResolver = resolver ?? new CachedHandlersResolver(new AttributeHandlersResolver());
+            _global = new GlobalStorage(handlersResolver);
+            _entity = new DynamicStorage(handlersResolver);
         }
 
-        // ToDo Refactor to count all delegates over global & local instances
-        public int Count => 0;
+        public int Count => _global.Count + _entity.Count;
+
+        public IContext<object> On() {
+            return _global.On();
+        }
 
         public IContext<TEntity> On<TEntity>(TEntity entity) {
-            if (entity == null)
-                throw new Exception("Can't create a Entity Signals context for empty entity");
+            return _entity.On(entity);
+        }
 
-            return new EntityContext<TEntity>(_cache, this, entity);
+        public IContext<TEntity> On<TEntity>() {
+            return _entity.On<TEntity>();
         }
 
         public void Dispose() {
-            _globalDelegates.Clear();
-            _delegates = new ConditionalWeakTable<object, List<Delegate>>();
+            _global.Dispose();
+            _entity.Dispose();
         }
 
-        internal List<Delegate> GetDelegates(object instance) {
-            return instance == null
-                ? _globalDelegates
-                : _delegates.GetValue(instance, k => new List<Delegate>());
+        public void Dispose<TEntity>(TEntity instance) {
+            _entity.Dispose(instance);
         }
-
-        internal void Send<TEntity, TSignal>(TEntity entity, TSignal arg) {
-            // if (Delegates.Count == 0)
-            //     throw new Exception(""); // ToDo Strict mode?
-
-            GetDelegates(entity).ForEach(receiver => {
-                (receiver as ESHandler<TSignal>)?
-                    .Invoke(arg);
-                if (entity != null)
-                    (receiver as ESHandler<TEntity, TSignal>)?
-                        .Invoke(entity, arg);
-            });
+        
+        public void Dispose<TEntity>() {
+            _entity.Dispose<TEntity>();
         }
     }
 }

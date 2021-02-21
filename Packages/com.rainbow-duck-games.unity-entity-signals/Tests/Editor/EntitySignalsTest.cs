@@ -1,4 +1,5 @@
 ﻿using System;
+using EntitySignals.Handlers;
 using NUnit.Framework;
 using UnityEngine;
 using Object = UnityEngine.Object;
@@ -7,22 +8,6 @@ using Object = UnityEngine.Object;
 
 namespace EntitySignals.Tests.Editor {
     public class EntitySignalsTest {
-        // ES.Subscribe(Any<Type>(), handler, ...);
-        // ES.Register<Type>(entity);
-        // Handler interface - part of the signal?
-        //
-        // Currents issues:
-        // - Messy in calls(what context used?) & signal instances
-        // - Hard to debug(no logging, no misconfiguration detection) - strict mode required?
-        // - Hard to test(required to pass the whole type as receiver)
-        // - Weak signatures(a lot of HandleSignal methods, hard to find out what is what)
-        //
-        // Features:
-        // - Entity-related handlers
-        // - Matching entity by predicate
-        // - Strict mode to detect misconfiguration
-        // - Verbose mode to detect misconfiguration(incl.on entity level)
-
         [Test]
         public void DefaultSignalContext() {
             var entity = Object.Instantiate(new GameObject());
@@ -45,13 +30,13 @@ namespace EntitySignals.Tests.Editor {
             var recorder = new Recorder();
             var handler = (ESHandler<int>) ((a1) => { recorder.Record("First", a1); });
 
-            es.Global.Add(handler);
-            Assert.AreEqual(1, es.Global.Count);
+            es.On().Add(handler);
+            Assert.AreEqual(1, es.On().Count);
 
-            es.Global.Send(1);
-            es.Global.Dispose();
+            es.On().Send(1);
+            es.On().Dispose();
 
-            Assert.AreEqual(0, es.Global.Count);
+            Assert.AreEqual(0, es.On().Count);
             recorder.Verify("First", 1);
         }
 
@@ -96,8 +81,8 @@ namespace EntitySignals.Tests.Editor {
             var entity = Object.Instantiate(new GameObject());
             var receiver = new TestReceiver();
 
-            es.On(entity).Add((ESHandler<GameObject, int>) receiver.OnGameObjectFirstSignal);
-            es.On(entity).Add((ESHandler<char>) receiver.OnGameObjectSecondSignal);
+            es.On(entity).Add((ESHandler<GameObject, int>) receiver.OnGameObjectSignal);
+            es.On(entity).Add((ESHandler<char>) receiver.OnGameObjectSignal);
             Assert.AreEqual(2, es.On(entity).Count);
 
             es.On(entity).Send(1);
@@ -109,38 +94,14 @@ namespace EntitySignals.Tests.Editor {
             receiver.Verify("Second", 't');
         }
 
-        [Test]
-        public void ThrowIfArgumentMismatch() {
-            var es = new EntitySignals();
-            var entity = Object.Instantiate(new GameObject());
-            var receiver = new WrongTestReceiver();
-
-            var e = Assert.Throws<Exception>(() => { es.On(entity).Add(receiver); });
-            Assert.AreEqual(
-                $"Can't bind method {nameof(WrongTestReceiver)}: Method WrongHandler has wrong amount of arguments",
-                e.Message);
-        }
-
-        [Test]
-        public void ThrowIfNothingToBind() {
-            var es = new EntitySignals();
-            var entity = Object.Instantiate(new GameObject());
-            var receiver = new ComponentReceiver();
-
-            var e = Assert.Throws<Exception>(() => { es.On(entity).Add(receiver); });
-            Assert.AreEqual(
-                $"Can't bind method {nameof(ComponentReceiver)} to entity UnityEngine.GameObject: No methods matched signature",
-                e.Message);
-        }
-
         private class TestReceiver : Recorder {
             [SignalHandler]
-            public void OnGameObjectFirstSignal(GameObject obj, int x) {
+            public void OnGameObjectSignal(GameObject obj, int x) {
                 Record("First", obj, x);
             }
 
             [SignalHandler]
-            public void OnGameObjectSecondSignal(char c) {
+            public void OnGameObjectSignal(char c) {
                 Record("Second", c);
             }
         }
