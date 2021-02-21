@@ -2,6 +2,7 @@
 
 <p>
   <a href="https://github.com/rainbow-duck-games/unity-entity-signals/actions?query=workflow%3A%22Unity+Tests%22"><img alt="Unity Tests status" src="https://github.com/rainbow-duck-games/unity-entity-signals/workflows/Unity Tests/badge.svg"></a>
+  <a href="https://openupm.com/packages/com.rainbow-duck-games.unity-entity-signals/"><img alt="Install with OpenUPM" src="https://img.shields.io/npm/v/com.rainbow-duck-games.unity-entity-signals?label=OpenUPM&amp;registry_uri=https://package.openupm.com"></a>
   <a href="https://twitter.com/RainbowDuckGms"><img alt="Follow Twitter" src="https://img.shields.io/badge/Twitter-Follow-blue"></a>
   <a href="https://discord.gg/2b9BhDhVBJ"><img alt="Join Discord" src="https://img.shields.io/badge/Discord-Join-blueviolet"></a>
 </p>
@@ -27,6 +28,8 @@ All these problems triggered the development of this library. We also tried to a
 - Verbose mode (in plans)
 
 ## Base usage
+
+Install the package using [OpenUPM](https://openupm.com/packages/com.rainbow-duck-games.unity-entity-signals/)
 
 #### Entity related handler
 ```
