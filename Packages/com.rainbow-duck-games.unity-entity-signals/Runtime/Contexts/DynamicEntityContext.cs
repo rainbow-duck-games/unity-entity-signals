@@ -2,9 +2,9 @@
 using EntitySignals.Storages;
 
 namespace EntitySignals.Contexts {
-    public class DynamicEntityContext<TEntity> : EntityContext<TEntity, DynamicSignals> {
-        public DynamicEntityContext(IHandlersResolver resolver, DynamicSignals dynamicSignals,
-            TEntity entity = default) : base(resolver, dynamicSignals, entity) {
+    public class DynamicEntityContext<TEntity> : EntityContext<TEntity, DynamicStorage> {
+        public DynamicEntityContext(IHandlersResolver resolver, DynamicStorage dynamicStorage,
+            TEntity entity = default) : base(resolver, dynamicStorage, entity) {
         }
 
         public override void Send<TSignal>(TSignal arg) {

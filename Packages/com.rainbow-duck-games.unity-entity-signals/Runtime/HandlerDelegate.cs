@@ -7,7 +7,7 @@ namespace EntitySignals {
         public readonly EfficientInvoker Invoker;
         public readonly object Receiver;
         public readonly int Args;
-        public Predicate<object> EntityPredicate = obj => true;
+        public Predicate<object> EntityPredicate = obj => true; // ToDo Support it?
 
         public HandlerDelegate(Type signalType, EfficientInvoker invoker, object receiver, int args = 2) {
             SignalType = signalType;

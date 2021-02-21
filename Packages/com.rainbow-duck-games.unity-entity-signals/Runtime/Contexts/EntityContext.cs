@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using EntitySignals.Handlers;
+using EntitySignals.Storages;
 
 namespace EntitySignals.Contexts {
-    public class EntityContext<TEntity, TSignals> : AbstractContext<TEntity> where TSignals : Storages.EntitySignals {
+    public class EntityContext<TEntity, TSignals> : AbstractContext<TEntity> where TSignals : EntityStorage {
         protected readonly TSignals Storage;
         protected readonly TEntity Entity;
 

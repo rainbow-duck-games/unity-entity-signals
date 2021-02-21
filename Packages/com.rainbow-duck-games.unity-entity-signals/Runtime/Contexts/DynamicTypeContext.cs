@@ -5,9 +5,9 @@ using EntitySignals.Storages;
 
 namespace EntitySignals.Contexts {
     public class DynamicTypeContext<TEntity> : AbstractContext<TEntity> {
-        private readonly DynamicSignals _storage;
+        private readonly DynamicStorage _storage;
 
-        public DynamicTypeContext(IHandlersResolver resolver, DynamicSignals storage) : base(resolver) {
+        public DynamicTypeContext(IHandlersResolver resolver, DynamicStorage storage) : base(resolver) {
             _storage = storage;
         }
 

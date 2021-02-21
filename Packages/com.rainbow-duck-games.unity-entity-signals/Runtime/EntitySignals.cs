@@ -5,13 +5,13 @@ using EntitySignals.Storages;
 
 namespace EntitySignals {
     public class EntitySignals {
-        private readonly GlobalSignals _global;
-        private readonly DynamicSignals _entity;
+        private readonly GlobalStorage _global;
+        private readonly DynamicStorage _entity;
 
         public EntitySignals(IHandlersResolver resolver = null) {
             var handlersResolver = resolver ?? new CachedHandlersResolver(new AttributeHandlersResolver());
-            _global = new GlobalSignals(handlersResolver);
-            _entity = new DynamicSignals(handlersResolver);
+            _global = new GlobalStorage(handlersResolver);
+            _entity = new DynamicStorage(handlersResolver);
         }
 
         public int Count => _global.Count + _entity.Count;

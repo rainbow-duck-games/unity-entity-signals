@@ -5,23 +5,23 @@ using EntitySignals.Contexts;
 using EntitySignals.Handlers;
 
 namespace EntitySignals.Storages {
-    public class EntitySignals {
+    public class EntityStorage {
         protected readonly IHandlersResolver Resolver;
 
         protected ConditionalWeakTable<object, List<HandlerDelegate>> Delegates =
             new ConditionalWeakTable<object, List<HandlerDelegate>>();
  
-        public EntitySignals(IHandlersResolver resolver) {
+        public EntityStorage(IHandlersResolver resolver) {
             Resolver = resolver;
         }
 
-        public int Count => 0; // ToDo
+        public int Count => throw new NotImplementedException("Rotate over delegates?");
 
         public virtual IContext<TEntity> On<TEntity>(TEntity entity) {
             if (entity == null)
                 throw new Exception("Can't create a Entity Signals context for empty entity");
 
-            return new EntityContext<TEntity, EntitySignals>(Resolver, this, entity);
+            return new EntityContext<TEntity, EntityStorage>(Resolver, this, entity);
         }
 
         public void Dispose() {
@@ -32,7 +32,7 @@ namespace EntitySignals.Storages {
             GetDelegates(entity).Clear();
         }
 
-        internal virtual List<HandlerDelegate> GetDelegates<TEntity>(TEntity entity) {
+        internal List<HandlerDelegate> GetDelegates<TEntity>(TEntity entity) {
             return Delegates.GetValue(entity, k => new List<HandlerDelegate>());
         }
     }

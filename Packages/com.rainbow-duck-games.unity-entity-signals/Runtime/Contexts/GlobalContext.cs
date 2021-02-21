@@ -6,9 +6,9 @@ using EntitySignals.Storages;
 
 namespace EntitySignals.Contexts {
     public sealed class GlobalContext : AbstractContext<object> {
-        private readonly GlobalSignals _storage;
+        private readonly GlobalStorage _storage;
 
-        public GlobalContext(IHandlersResolver resolver, GlobalSignals storage) : base(resolver) {
+        public GlobalContext(IHandlersResolver resolver, GlobalStorage storage) : base(resolver) {
             _storage = storage;
         }
 

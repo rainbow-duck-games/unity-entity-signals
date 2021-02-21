@@ -3,11 +3,11 @@ using EntitySignals.Contexts;
 using EntitySignals.Handlers;
 
 namespace EntitySignals.Storages {
-    public class GlobalSignals {
+    public class GlobalStorage {
         private List<HandlerDelegate> _delegates = new List<HandlerDelegate>();
         private readonly GlobalContext _global;
 
-        public GlobalSignals(IHandlersResolver resolver) {
+        public GlobalStorage(IHandlersResolver resolver) {
             _global = new GlobalContext(resolver, this);
         }
 
@@ -21,6 +21,6 @@ namespace EntitySignals.Storages {
             _delegates = new List<HandlerDelegate>();
         }
 
-        public List<HandlerDelegate> GetDelegates() => _delegates;
+        internal List<HandlerDelegate> GetDelegates() => _delegates;
     }
 }

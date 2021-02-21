@@ -4,8 +4,8 @@ using EntitySignals.Contexts;
 using EntitySignals.Handlers;
 
 namespace EntitySignals.Storages {
-    public class DynamicSignals : EntitySignals {
-        public DynamicSignals(IHandlersResolver resolver) : base(resolver) {
+    public class DynamicStorage : EntityStorage {
+        public DynamicStorage(IHandlersResolver resolver) : base(resolver) {
         }
 
         public override IContext<TEntity> On<TEntity>(TEntity entity) {
