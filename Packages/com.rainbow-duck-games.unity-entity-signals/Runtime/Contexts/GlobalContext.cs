@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using EntitySignals.Handlers;
-using EntitySignals.Storages;
+using RainbowDuckGames.UnityEntitySignals.Handlers;
+using RainbowDuckGames.UnityEntitySignals.Storages;
 
-namespace EntitySignals.Contexts {
+namespace RainbowDuckGames.UnityEntitySignals.Contexts {
     public sealed class GlobalContext : AbstractContext<object> {
         private readonly GlobalStorage _storage;
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace EntitySignals.Handlers {
+namespace RainbowDuckGames.UnityEntitySignals.Handlers {
     public class CachedHandlersResolver : IHandlersResolver {
         private readonly IHandlersResolver _resolver;
 

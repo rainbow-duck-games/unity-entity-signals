@@ -1,12 +1,12 @@
 ﻿using System;
-using EntitySignals.Handlers;
 using Homebrew;
 using NUnit.Framework;
+using RainbowDuckGames.UnityEntitySignals.Handlers;
 using Unity.PerformanceTesting;
 
 #pragma warning disable 618
 
-namespace EntitySignals.Tests.Editor.Performance {
+namespace RainbowDuckGames.UnityEntitySignals.Tests.Editor.Performance {
     public abstract class AbstractPerfTest {
         private const int Warmup = 10;
         private const int Measurements = 10;

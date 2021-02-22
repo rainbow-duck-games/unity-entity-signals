@@ -1,4 +1,4 @@
-﻿namespace EntitySignals {
+﻿namespace RainbowDuckGames.UnityEntitySignals {
     public interface IContext<out TEntity> {
         int Count { get; }
 

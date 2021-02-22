@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using EntitySignals.Utility.Tact;
 using JetBrains.Annotations;
+using RainbowDuckGames.UnityEntitySignals.Utility.Tact;
 
-namespace EntitySignals.Handlers {
+namespace RainbowDuckGames.UnityEntitySignals.Handlers {
     public class InterfaceHandlersResolver : IHandlersResolver {
         public HandlerMeta[] GetHandlers(Type type) {
             return type.GetInterfaces()

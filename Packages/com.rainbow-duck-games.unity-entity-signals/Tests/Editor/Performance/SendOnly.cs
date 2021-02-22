@@ -2,7 +2,7 @@
 using Homebrew;
 using JetBrains.Annotations;
 
-namespace EntitySignals.Tests.Editor.Performance {
+namespace RainbowDuckGames.UnityEntitySignals.Tests.Editor.Performance {
         [UsedImplicitly]
         public class SendOnly : AbstractPerfTest {
             protected override Action PrepareSignals(Signals signals, Func<Recorder> receiverPrepare) {

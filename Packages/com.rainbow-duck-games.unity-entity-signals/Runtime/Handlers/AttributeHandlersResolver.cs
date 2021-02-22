@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using EntitySignals.Utility.Tact;
 using JetBrains.Annotations;
+using RainbowDuckGames.UnityEntitySignals.Utility.Tact;
 
-namespace EntitySignals.Handlers {
+namespace RainbowDuckGames.UnityEntitySignals.Handlers {
     public class AttributeHandlersResolver : IHandlersResolver {
         public HandlerMeta[] GetHandlers(Type type) {
             var list = new List<HandlerMeta>();

@@ -1,8 +1,8 @@
 ﻿using System.Linq;
-using EntitySignals.Handlers;
-using EntitySignals.Storages;
+using RainbowDuckGames.UnityEntitySignals.Handlers;
+using RainbowDuckGames.UnityEntitySignals.Storages;
 
-namespace EntitySignals.Contexts {
+namespace RainbowDuckGames.UnityEntitySignals.Contexts {
     public class DynamicEntityContext<TEntity> : EntityContext<TEntity, DynamicStorage> {
         public DynamicEntityContext(IHandlersResolver resolver, DynamicStorage dynamicStorage,
             TEntity entity = default) : base(resolver, dynamicStorage, entity) {

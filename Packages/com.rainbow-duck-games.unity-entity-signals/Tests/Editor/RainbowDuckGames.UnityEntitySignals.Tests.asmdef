@@ -1,6 +1,6 @@
 {
     "name": "RainbowDuckGames.UnityEntitySignals.Tests",
-    "rootNamespace": "EntitySignals",
+    "rootNamespace": "RainbowDuckGames.UnityEntitySignals",
     "references": [
         "RainbowDuckGames.UnityEntitySignals",
         "UnityEngine.TestRunner",

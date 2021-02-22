@@ -1,7 +1,7 @@
-﻿using EntitySignals.Storages;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using RainbowDuckGames.UnityEntitySignals.Storages;
 
-namespace EntitySignals.Tests.Editor.Storages {
+namespace RainbowDuckGames.UnityEntitySignals.Tests.Editor.Storages {
     public class EntityStorageTest : AbstractEntityStorageTest<EntityStorage> {
         [SetUp]
         public void SetUp() {

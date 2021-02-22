@@ -1,4 +1,4 @@
-﻿namespace EntitySignals {
+﻿namespace RainbowDuckGames.UnityEntitySignals {
     /// <summary>
     /// Static alias for default implementation of EntitySignals
     /// </summary>

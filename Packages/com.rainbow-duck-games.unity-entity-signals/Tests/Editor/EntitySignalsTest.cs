@@ -1,12 +1,11 @@
-﻿using System;
-using EntitySignals.Handlers;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using RainbowDuckGames.UnityEntitySignals.Handlers;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
 #pragma warning disable 618
 
-namespace EntitySignals.Tests.Editor {
+namespace RainbowDuckGames.UnityEntitySignals.Tests.Editor {
     public class EntitySignalsTest {
         [Test]
         public void DefaultSignalContext() {

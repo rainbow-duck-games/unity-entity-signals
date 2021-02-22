@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using EntitySignals.Handlers;
-using EntitySignals.Storages;
+using RainbowDuckGames.UnityEntitySignals.Handlers;
+using RainbowDuckGames.UnityEntitySignals.Storages;
 
-namespace EntitySignals.Contexts {
+namespace RainbowDuckGames.UnityEntitySignals.Contexts {
     public class EntityContext<TEntity, TSignals> : AbstractContext<TEntity> where TSignals : EntityStorage {
         protected readonly TSignals Storage;
         protected readonly TEntity Entity;
