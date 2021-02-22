@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using EntitySignals.Handlers;
-using EntitySignals.Utility.Tact;
+using RainbowDuckGames.UnityEntitySignals.Handlers;
+using RainbowDuckGames.UnityEntitySignals.Utility.Tact;
 
-namespace EntitySignals.Contexts {
+namespace RainbowDuckGames.UnityEntitySignals.Contexts {
     public abstract class AbstractContext<TEntity> : IContext<TEntity> {
         protected readonly IHandlersResolver Resolver;
 

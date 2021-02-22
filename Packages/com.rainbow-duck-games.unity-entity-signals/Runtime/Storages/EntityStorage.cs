@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using EntitySignals.Contexts;
-using EntitySignals.Handlers;
+using RainbowDuckGames.UnityEntitySignals.Contexts;
+using RainbowDuckGames.UnityEntitySignals.Handlers;
 
-namespace EntitySignals.Storages {
+namespace RainbowDuckGames.UnityEntitySignals.Storages {
     public class EntityStorage {
         protected readonly IHandlersResolver Resolver;
 

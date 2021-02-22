@@ -1,7 +1,7 @@
 ﻿using System;
-using EntitySignals.Utility.Tact;
+using RainbowDuckGames.UnityEntitySignals.Utility.Tact;
 
-namespace EntitySignals {
+namespace RainbowDuckGames.UnityEntitySignals {
     public class HandlerDelegate {
         public readonly Type SignalType;
         public readonly EfficientInvoker Invoker;

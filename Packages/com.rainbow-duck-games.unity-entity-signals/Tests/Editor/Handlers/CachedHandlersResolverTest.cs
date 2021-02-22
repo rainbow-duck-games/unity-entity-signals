@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
-using EntitySignals.Handlers;
 using NUnit.Framework;
+using RainbowDuckGames.UnityEntitySignals.Handlers;
 
-namespace EntitySignals.Tests.Editor.Handlers {
+namespace RainbowDuckGames.UnityEntitySignals.Tests.Editor.Handlers {
     public class CachedHandlersResolverTest {
         [Test]
         public void ProcessCachedResolver() {

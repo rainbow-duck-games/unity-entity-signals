@@ -1,6 +1,6 @@
 {
     "name": "RainbowDuckGames.UnityEntitySignals",
-    "rootNamespace": "EntitySignals",
+    "rootNamespace": "RainbowDuckGames.UnityEntitySignals",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

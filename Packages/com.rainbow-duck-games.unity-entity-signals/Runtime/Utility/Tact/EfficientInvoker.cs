@@ -10,7 +10,7 @@ using System.Threading.Tasks;
  * Source code available here - https://github.com/tdupont750/tact.net/blob/master/framework/src/Tact/Reflection/EfficientInvoker.cs
  * Author: Tom DuPont / tdupont750@gmail.com
  ********************************/
-namespace EntitySignals.Utility.Tact {
+namespace RainbowDuckGames.UnityEntitySignals.Utility.Tact {
     public sealed class EfficientInvoker {
         private static readonly ConcurrentDictionary<ConstructorInfo, Func<object[], object>>
             ConstructorToWrapperMap

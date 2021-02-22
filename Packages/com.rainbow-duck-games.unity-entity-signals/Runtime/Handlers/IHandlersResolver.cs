@@ -1,7 +1,7 @@
 ﻿using System;
-using EntitySignals.Utility.Tact;
+using RainbowDuckGames.UnityEntitySignals.Utility.Tact;
 
-namespace EntitySignals.Handlers {
+namespace RainbowDuckGames.UnityEntitySignals.Handlers {
     public interface IHandlersResolver {
         HandlerMeta[] GetHandlers(Type type);
     }

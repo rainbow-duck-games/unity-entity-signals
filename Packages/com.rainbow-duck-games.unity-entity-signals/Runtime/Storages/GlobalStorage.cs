@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using EntitySignals.Contexts;
-using EntitySignals.Handlers;
+using RainbowDuckGames.UnityEntitySignals.Contexts;
+using RainbowDuckGames.UnityEntitySignals.Handlers;
 
-namespace EntitySignals.Storages {
+namespace RainbowDuckGames.UnityEntitySignals.Storages {
     public class GlobalStorage {
         private List<HandlerDelegate> _delegates = new List<HandlerDelegate>();
         private readonly GlobalContext _global;

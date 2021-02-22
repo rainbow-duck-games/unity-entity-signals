@@ -1,9 +1,9 @@
-﻿using EntitySignals.Handlers;
-using EntitySignals.Storages;
+﻿using RainbowDuckGames.UnityEntitySignals.Handlers;
+using RainbowDuckGames.UnityEntitySignals.Storages;
 
 #pragma warning disable 618
 
-namespace EntitySignals {
+namespace RainbowDuckGames.UnityEntitySignals {
     public class EntitySignals {
         private readonly GlobalStorage _global;
         private readonly DynamicStorage _entity;

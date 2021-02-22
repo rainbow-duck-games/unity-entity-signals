@@ -1,11 +1,11 @@
 ﻿using System;
-using EntitySignals.Handlers;
-using EntitySignals.Storages;
-using EntitySignals.Utility.Tact;
 using JetBrains.Annotations;
 using NUnit.Framework;
+using RainbowDuckGames.UnityEntitySignals.Handlers;
+using RainbowDuckGames.UnityEntitySignals.Storages;
+using RainbowDuckGames.UnityEntitySignals.Utility.Tact;
 
-namespace EntitySignals.Tests.Editor.Storages {
+namespace RainbowDuckGames.UnityEntitySignals.Tests.Editor.Storages {
     public class GlobalStorageTest {
         [Test]
         public void ReceiverObject() {

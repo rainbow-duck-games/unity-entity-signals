@@ -1,13 +1,13 @@
 ﻿using System;
-using EntitySignals.Handlers;
-using EntitySignals.Storages;
-using EntitySignals.Utility.Tact;
 using Homebrew;
 using JetBrains.Annotations;
 using NUnit.Framework;
+using RainbowDuckGames.UnityEntitySignals.Handlers;
+using RainbowDuckGames.UnityEntitySignals.Storages;
+using RainbowDuckGames.UnityEntitySignals.Utility.Tact;
 using Unity.PerformanceTesting;
 
-namespace EntitySignals.Tests.Editor.Performance {
+namespace RainbowDuckGames.UnityEntitySignals.Tests.Editor.Performance {
     public class StoragesPerformance {
         private const int Warmup = 10;
         private const int Measurements = 10;

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
  * Source code available here - https://github.com/tdupont750/tact.net/blob/9d73a912dfd64bbd7fa88d3d1460c23c848af61a/framework/src/Tact/Extensions/TaskExtensions.cs
  * Author: Tom DuPont / tdupont750@gmail.com
  ********************************/
-namespace EntitySignals.Utility.Tact {
+namespace RainbowDuckGames.UnityEntitySignals.Utility.Tact {
     public static class TaskExtensions {
         private const string CompleteTaskMessage = "Task must be complete";
 
