@@ -12,6 +12,10 @@
         public static IContext<TEntity> On<TEntity>(TEntity entity) {
             return Default.On(entity);
         }
+        
+        public static IContext<TEntity> On<TEntity>() {
+            return Default.On<TEntity>();
+        }
 
         public static void Dispose() {
             Default.Dispose();
