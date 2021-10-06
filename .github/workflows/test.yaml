@@ -6,25 +6,29 @@ on:
       - master
   pull_request:
 
-env:
-  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-
 jobs:
   testAllModes:
-    name: Test on version ${{ matrix.unityVersion }}
+    name: Test run - ${{ matrix.unityVersion }}
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        projectPath:
-          - .
-        unityVersion:
-          - 2018.4.36f1
-          - 2019.4.31f1
-          - 2020.3.19f1
-          - 2021.1.23f1
+        projectPath: [ "." ]
+        unityVersion: [ "2018.4.36f1", "2019.4.31f1", "2020.3.19f1", "2021.1.23f1" ]
+        include:
+          - unityVersion: "2018.4.36f1"
+            unityLicenseKey: ${{UNITY_LICENSE_2018}}
+          - unityVersion: "2019.4.31f1"
+            unityLicenseKey: ${{UNITY_LICENSE_2019}}
+          - unityVersion: "2020.3.19f1"
+            unityLicenseKey: ${{UNITY_LICENSE}}
+          - unityVersion: "2021.1.23f1"
+            unityLicenseKey: ${{UNITY_LICENSE_2021}}
 
+    env:
+      UNITY_LICENSE: ${{ matrix.unityLicenseKey }}
+    
     steps:
       - uses: actions/checkout@v2
         with:
@@ -45,7 +49,7 @@ jobs:
             Library-
       - run: ./scripts/coverageAssemblyFilters
         id: assemblyFilters
-      - uses: game-ci/unity-test-runner@main
+      - uses: game-ci/unity-test-runner@v2.0-alpha-6
         id: tests
         with:
           projectPath: ${{ matrix.projectPath }}
@@ -62,6 +66,7 @@ jobs:
         if: ${{ always() }} # Avoid skipping on failed tests
         with:
           githubToken: ${{ secrets.GITHUB_TOKEN }}
+          checkName: Test results - ${{ matrix.unityVersion }}
       - name: Upload Code Coverage Artifacts
         uses: actions/upload-artifact@v1
         with:
