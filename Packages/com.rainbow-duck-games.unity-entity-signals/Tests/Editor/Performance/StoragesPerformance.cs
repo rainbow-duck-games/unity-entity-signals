@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Homebrew;
 using JetBrains.Annotations;
 using NUnit.Framework;
@@ -26,12 +27,13 @@ namespace RainbowDuckGames.UnityEntitySignals.Tests.Editor.Performance {
         [Test, Performance]
         public void PixeyeSignals() {
             var signals = new Signals();
+            var receiver = new SignalsTestReceiver();
             RunMeasure(() => {
-                var receiver = new SignalsTestReceiver();
                 signals.Add(receiver);
                 signals.Send(1);
                 signals.Remove(receiver);
             });
+            Assert.AreEqual(Iterations * (Warmup + Measurements), receiver.value);
         }
 
         [Test, Performance]
@@ -41,12 +43,13 @@ namespace RainbowDuckGames.UnityEntitySignals.Tests.Editor.Performance {
                     EfficientInvoker.ForMethod(typeof(TestReceiver), "HandleSignal"))
             });
             var es = new GlobalStorage(handler);
+            var receiver = new TestReceiver();
             RunMeasure(() => {
-                var receiver = new TestReceiver();
                 es.On().Add(receiver);
                 es.On().Send(1);
                 es.On().Remove(receiver);
             });
+            Assert.AreEqual(Iterations * (Warmup + Measurements), receiver.value);
         }
 
         [Test, Performance]
@@ -57,12 +60,13 @@ namespace RainbowDuckGames.UnityEntitySignals.Tests.Editor.Performance {
             });
             var es = new EntityStorage(handler);
             var entity = new TestEntity();
+            var receiver = new TestReceiver();
             RunMeasure(() => {
-                var receiver = new TestReceiver();
                 es.On(entity).Add(receiver);
                 es.On(entity).Send(1);
                 es.On(entity).Remove(receiver);
             });
+            Assert.AreEqual(Iterations * (Warmup + Measurements), receiver.value);
         }
 
         [Test, Performance]
@@ -73,19 +77,22 @@ namespace RainbowDuckGames.UnityEntitySignals.Tests.Editor.Performance {
             });
             var es = new DynamicStorage(handler);
             var entity = new TestEntity();
+            var receiver = new TestReceiver();
             RunMeasure(() => {
-                var receiver = new TestReceiver();
                 es.On<TestEntity>().Add(receiver);
                 es.On(entity).Send(1);
                 es.On<TestEntity>().Remove(receiver);
             });
+            Assert.AreEqual(Iterations * (Warmup + Measurements), receiver.value);
         }
 
         protected class TestEntity {
         }
 
         private class SignalsTestReceiver : IReceive<int> {
+            public int value;
             public void HandleSignal(int arg) {
+                Interlocked.Increment(ref value);
             }
         }
 
@@ -102,8 +109,10 @@ namespace RainbowDuckGames.UnityEntitySignals.Tests.Editor.Performance {
         }
 
         protected class TestReceiver {
+            public int value;
             [UsedImplicitly]
             public void HandleSignal(TestEntity entity, int i) {
+                Interlocked.Increment(ref value);
             }
         }
     }
