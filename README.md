@@ -53,6 +53,20 @@ es.On(entity).Send(1);
 
 For detailed documentations check [README.md](/Packages/com.rainbow-duck-games.unity-entity-signals/README.md)
 
+## FAQ
+
+* #### I have problems with MacOS / WebGL build. The project doesn't work at all!
+  Most probably the issue is related to IL2CPP implementation in Unity. You can check [this issue]() to find
+  more details and links, but to fix the issue you have to add `link.xml` file in the root `Assets` folder with
+  following content:
+  ```
+  <linker>
+    <assembly fullname="System.Core">
+      <type fullname="System.Linq.Expressions.Interpreter.LightLambda" preserve="all" />
+    </assembly>
+  </linker>
+  ```
+
 ## Contribution
 
 We are welcome any contribution. Feel free to create issues, start a discussion or even fork and create a pull request.
