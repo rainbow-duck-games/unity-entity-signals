@@ -12,10 +12,10 @@ namespace RainbowDuckGames.UnityEntitySignals.Handlers {
                 .Select(i => {
                     var entityType = i.GetGenericArguments()[0];
                     var signalType = i.GetGenericArguments()[1];
-                    var methodInfo = type.GetMethod("HandleSignal", new[] {entityType, signalType});
+                    var methodInfo = type.GetMethod("HandleSignal", new[] { entityType, signalType });
                     return new HandlerMeta(
                         entityType, signalType,
-                        2, type.GetMethodInvoker(methodInfo));
+                        2, EfficientInvoker.ForMethod(type, methodInfo));
                 })
                 .ToArray();
         }

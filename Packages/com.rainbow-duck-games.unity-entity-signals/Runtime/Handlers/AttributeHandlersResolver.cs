@@ -34,14 +34,14 @@ namespace RainbowDuckGames.UnityEntitySignals.Handlers {
             return new HandlerMeta(
                 attr.EntityType,
                 attr.SignalType ?? candidate.GetParameters()[0].ParameterType,
-                1, type.GetMethodInvoker(candidate));
+                1, EfficientInvoker.ForMethod(type, candidate));
         }
 
         private static HandlerMeta TwoArgDelegate(SignalHandlerAttribute attr, Type type, MethodInfo candidate) {
             return new HandlerMeta(
                 attr.EntityType ?? candidate.GetParameters()[0].ParameterType,
                 attr.SignalType ?? candidate.GetParameters()[1].ParameterType,
-                2, type.GetMethodInvoker(candidate));
+                2, EfficientInvoker.ForMethod(type, candidate));
         }
     }
 
