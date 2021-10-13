@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using RainbowDuckGames.UnityEntitySignals.Handlers;
 using RainbowDuckGames.UnityEntitySignals.Utility.Tact;
+using UnityEngine;
 
 namespace RainbowDuckGames.UnityEntitySignals.Contexts {
     public abstract class AbstractContext<TEntity> : IContext<TEntity> {
@@ -30,11 +31,13 @@ namespace RainbowDuckGames.UnityEntitySignals.Contexts {
         }
 
         public void Add<TSignal>(ESHandler<TSignal> signalHandler) {
-            AddHandlers(new HandlerDelegate(typeof(TSignal), signalHandler.GetInvoker(), signalHandler, 1));
+            AddHandlers(new HandlerDelegate(typeof(TSignal), EfficientInvoker.ForDelegate(signalHandler), signalHandler,
+                1));
         }
 
         public void Add<TSignal>(ESHandler<TEntity, TSignal> signalHandler) {
-            AddHandlers(new HandlerDelegate(typeof(TSignal), signalHandler.GetInvoker(), signalHandler));
+            AddHandlers(
+                new HandlerDelegate(typeof(TSignal), EfficientInvoker.ForDelegate(signalHandler), signalHandler));
         }
 
         public void Remove(object receiver) {
@@ -51,23 +54,10 @@ namespace RainbowDuckGames.UnityEntitySignals.Contexts {
 
         public abstract void Send<TSignal>(TSignal arg);
 
-        protected void ExecuteSend(object entity, object signal, List<HandlerDelegate> delegates) {
-            // TODO Strict mode
-
+        protected void ExecuteSend<TSignal>(TEntity entity, TSignal signal, List<HandlerDelegate> delegates) {
             delegates
-                .ForEach(rd => {
-                    if (!rd.Valid(entity, signal))
-                        return;
-
-                    switch (rd.Args) {
-                        case 1:
-                            rd.Invoker.Invoke(rd.Receiver, signal);
-                            break;
-                        case 2:
-                            rd.Invoker.Invoke(rd.Receiver, entity, signal);
-                            break;
-                    }
-                });
+                .FindAll(handler => handler.Valid(entity, signal))
+                .ForEach(handler => handler.Invoke(entity, signal));
         }
 
         public abstract void Dispose();
@@ -79,8 +69,8 @@ namespace RainbowDuckGames.UnityEntitySignals.Contexts {
         }
 
         private void RemoveHandlers(object receiver) {
-            GetContextDelegates()
-                .RemoveAll(rd => ReferenceEquals(rd.Receiver, receiver));
+            GetContextDelegates().RemoveAll(handler => !handler.IsAlive(out _));
+            GetContextDelegates().RemoveAll(handler => handler.ReceiverEquals(receiver));
         }
     }
 }

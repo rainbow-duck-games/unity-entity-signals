@@ -102,18 +102,6 @@ namespace RainbowDuckGames.UnityEntitySignals.Utility.Tact {
             return _func(target, args);
         }
 
-        public async Task<object> InvokeAsync(object target, params object[] args) {
-            var result = _func(target, args);
-            var task = result as Task;
-            if (task == null)
-                return result;
-
-            if (!task.IsCompleted)
-                await task.ConfigureAwait(false);
-
-            return task.GetResult();
-        }
-
         private static Func<object, object[], object> CreateMethodWrapper(Type type, MethodInfo method,
             bool isDelegate) {
             CreateParamsExpressions(method, out ParameterExpression argsExp, out Expression[] paramsExps);

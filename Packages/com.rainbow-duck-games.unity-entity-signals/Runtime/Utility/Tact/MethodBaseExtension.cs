@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -10,8 +11,11 @@ using System.Reflection;
  ********************************/
 namespace RainbowDuckGames.UnityEntitySignals.Utility.Tact {
     public static class MethodBaseExtensions {
+        private static readonly ConcurrentDictionary<MethodBase, IReadOnlyList<Type>> ParameterMap =
+            new ConcurrentDictionary<MethodBase, IReadOnlyList<Type>>();
+        
         public static IReadOnlyList<Type> GetParameterTypes(this MethodBase method) {
-            return TypeExtensions.ParameterMap.GetOrAdd(method,
+            return ParameterMap.GetOrAdd(method,
                 c => c.GetParameters().Select(p => p.ParameterType).ToArray());
         }
     }
