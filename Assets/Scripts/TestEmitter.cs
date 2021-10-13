@@ -1,6 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
-using DefaultNamespace;
+using RainbowDuckGames.UnityEntitySignals;
 using UnityEngine;
 
 public class TestEmitter : MonoBehaviour {
@@ -14,7 +13,7 @@ public class TestEmitter : MonoBehaviour {
     public IEnumerator RandomColor() {
         while (true) {
             var color = new Color(Random.value, Random.value, Random.value);
-            Global.Signals.On().Send(new ColorSignal(color));
+            ES.Global.Send(new ColorSignal(color));
             yield return new WaitForSeconds(Random.Range(TimeFrom, TimeTo));
         }
     }

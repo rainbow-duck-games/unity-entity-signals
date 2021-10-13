@@ -1,4 +1,3 @@
-using DefaultNamespace;
 using RainbowDuckGames.UnityEntitySignals;
 using RainbowDuckGames.UnityEntitySignals.Handlers;
 using UnityEngine;
@@ -6,11 +5,11 @@ using UnityEngine;
 [RequireComponent(typeof(SpriteRenderer))]
 public class TestCatcher : MonoBehaviour {
     void OnEnable() {
-        Global.Signals.On().Add((ESHandler<TestEmitter.ColorSignal>) OnSignal);
+        ES.Global.Add(this);
     }
 
     void OnDisable() {
-        Global.Signals.On().Remove(this);
+        ES.Global.Remove(this);
     }
 
     [SignalHandler]
